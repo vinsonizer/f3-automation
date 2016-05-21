@@ -28,8 +28,7 @@ function main(url) {
     var ss = getSheet();
 
     var property = PropertiesService.getScriptProperties();
-    //var last_update = property.getProperty('last_update');
-    var last_update = null;
+    var last_update = property.getProperty('last_update');
     last_update = last_update === null ? 0 : parseFloat(last_update);
 
     var feed = UrlFetchApp.fetch(url).getContentText();
