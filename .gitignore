@@ -1,0 +1,17 @@
+# npm files and dirs #
+######################
+node_modules
+
+# OS generated files #
+######################
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# This should be created per cloned repo, not downloaded.  
+# See Readme.md for details
+gapps.config.json
