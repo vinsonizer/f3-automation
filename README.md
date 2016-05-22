@@ -23,5 +23,8 @@ This will create a gapps.config.json file with the configuration needed.  All so
 
 `gapps upload`
 
+### Configuring a trigger
+In script.google.com, go Resources -> Current Project's Triggers.  Choose the proper trigger (e.g. checkBackblasts) and a schedule (E.g. hourly at every 4 hours).  I also like to set a notification in case of errors here.
+
 ### More reading:
 [See Here](https://www.npmjs.com/package/node-google-apps-script) for the npm documentation on this gapps workflow and [Here](https://developers.googleblog.com/2015/12/advanced-development-process-with-apps.html?m=1) for an article on best practices.
