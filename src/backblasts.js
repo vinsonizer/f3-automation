@@ -3,32 +3,17 @@
  * parse the feed and look for new entries.  For each new entry, it will
  * pull the HTML for the backblast and parse out relevant info for tracking.
  *
- * @author Gears (Jason Vinson)
- *
- * config is a global config object.  Anyone who adopts this script should
- * only have to change these three values to get this working for their region.
- *
- * url: Feed by region, if you go to your schedules landing page you find it
- *
- * fileId: File Id for Google sheet.  Open Sheet in browser and copy
- * string after the d/ up to /edit
- *
- * sheetName: Name of the sheet inside the google sheet, assumes Columns are:
- *  Date, Categories, Count, Url
+ * @author Gears (Jason Vinson).
  */
-var config = {
-    url: "http://f3nation.com/locations/fort-mill-sc/feed/",
-    fileId: "1B5l_olGDsHI8fL_kzR9h4V5lFrJysB3a6xvU7sct7lk",
-    sheetName: "BB Counts"
-};
 
+// The config object comes from the defualt gulp task...
 
 /**
  * Main function that should be invoked by trigger
  */
 function checkBackblasts() {
-    var url = config.url;
-    main(url);
+    var cfg = getConfiguration();
+    main(cfg);
 }
 
 
@@ -40,9 +25,10 @@ function checkBackblasts() {
  *
  * Credit: https://gist.github.com/agektmr
  */
-function main(url) {
+function main(cfg) {
 
-    var ss = getSheet();
+    var url = cfg.url;
+    var ss = getSheet(cfg);
 
     var property = PropertiesService.getScriptProperties();
     var last_update = property.getProperty('last_update');
@@ -66,9 +52,9 @@ function main(url) {
  * Get the configured sheet object to write to.
  * @return {Object} configured sheet reference.
  */
-function getSheet() {
-    var file = SpreadsheetApp.openById(config.fileId);
-    var sheet = file.getSheetByName(config.sheetName);
+function getSheet(cfg) {
+    var file = SpreadsheetApp.openById(cfg.fileId);
+    var sheet = file.getSheetByName(cfg.sheetName);
     return sheet;
 }
 

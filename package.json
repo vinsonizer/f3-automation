@@ -1,0 +1,19 @@
+{
+  "name": "f3-automation",
+  "version": "1.0.0",
+  "description": "Scripts to Automate F3 Nation Comz Tasks",
+  "devDependencies": {
+    "gulp": "^3.9.1",
+    "gulp-concat": "^2.6.0",
+    "gulp-shell": "^0.5.2"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://www.github.com/vinsonizer/f3-automation.git"
+  },
+  "author": "",
+  "license": "ISC"
+}
