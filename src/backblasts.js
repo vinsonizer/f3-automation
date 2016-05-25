@@ -12,8 +12,8 @@
  * Main function that should be invoked by trigger
  */
 function checkBackblasts() {
-    var cfg = getConfiguration();
-    main(cfg);
+    var config = getConfiguration();
+    main(config.backblast_config);
 }
 
 
@@ -21,7 +21,7 @@ function checkBackblasts() {
  * Main fuction to drive the logic for the script.
  * Most of this code was originally contributed by Wingman (Trent Jones)
  *
- * @param {String} url The RSS URL to monitor
+ * @param {Object} cfg Configuration Object with all settings for this to work
  *
  * Credit: https://gist.github.com/agektmr
  */
@@ -50,6 +50,8 @@ function main(cfg) {
 
 /**
  * Get the configured sheet object to write to.
+ *
+ * @param {Object} cfg Configuration Object with all settings for this to work
  * @return {Object} configured sheet reference.
  */
 function getSheet(cfg) {

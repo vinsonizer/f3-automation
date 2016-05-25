@@ -12,10 +12,16 @@
  *  Date, Categories, Count, Url
  */
 function getConfiguration() {
-    var config = {
+    var backblast_config = {
         url: "http://f3nation.com/locations/fort-mill-sc/feed/",
         fileId: "1B5l_olGDsHI8fL_kzR9h4V5lFrJysB3a6xvU7sct7lk",
         sheetName: "BB Counts"
     };
-    return config;
+    var trello_config = {
+
+    };
+    return {
+        backblast_config: backblast_config,
+        trello_config: trello_config
+    };
 }
