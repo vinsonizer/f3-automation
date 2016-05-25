@@ -4,6 +4,7 @@ There are two ways to get this working.  The first way is simpler (less tech-sav
 
 # Required Configuration
 Three config items are required for the BB counts script to work:
+
 1. The URL for the feed.  This is typically the same as your region location landing page with "feed" at the end (e.g. http://f3nation.com/locations/fort-mill-sc/feed/)
 2. The fileId for your google sheet.  Create a new Google Sheet and then look at the url.  The fileId is the string between /d and /edit.
 3. The sheetName for your google sheet.  This is the actual sheet name in the google sheet, which should have the following columns: Date, Categories, Count, Url
