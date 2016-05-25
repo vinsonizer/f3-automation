@@ -12,7 +12,8 @@ gulp.task('prepare-upload', function() {
       .pipe(gulp.dest(buildDir));
 });
 
-gulp.task('upload', shell.task(['gapps upload'], {cwd: '.', verbose: true}));
+gulp.task('upload',
+  shell.task(['gapps upload'], {cwd: '.'}));
 
 gulp.task('cleanup', function() {
   return cleanDest(buildDir);
