@@ -12,6 +12,9 @@ node_modules
 ehthumbs.db
 Thumbs.db
 
-# This should be created per cloned repo, not downloaded.  
+# This should be created per cloned repo, not downloaded.
 # See Readme.md for details
 gapps.config.json
+
+# build artifacts
+build
