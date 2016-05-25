@@ -1,6 +1,7 @@
 var gulp = require('gulp');
 var concat = require('gulp-concat');
 var shell = require('gulp-shell');
+var cleanDest = require('gulp-clean-dest');
 
 var srcRoot = './src/';
 var cfgRoot = './cfg/';
@@ -13,8 +14,8 @@ gulp.task('prepare-upload', function() {
 
 gulp.task('upload', shell.task(['gapps upload'], {cwd: '.', verbose: true}));
 
-gulp.task('shorthand', shell.task([
-  'gapps upload'
-]));
+gulp.task('cleanup', function() {
+  return cleanDest(buildDir);
+});
 
-gulp.task('default', ['prepare-upload', 'upload']);
+gulp.task('default', ['cleanup', 'prepare-upload', 'upload']);

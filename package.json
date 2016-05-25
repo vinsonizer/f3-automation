@@ -4,6 +4,7 @@
   "description": "Scripts to Automate F3 Nation Comz Tasks",
   "devDependencies": {
     "gulp": "^3.9.1",
+    "gulp-clean-dest": "^0.1.1",
     "gulp-concat": "^2.6.0",
     "gulp-shell": "^0.5.2"
   },
