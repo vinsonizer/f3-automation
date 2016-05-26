@@ -111,17 +111,27 @@ function getAdditionalData(item) {
     var url = item.getChildText('link');
     var body = UrlFetchApp.fetch(url).getContentText();
 
+    var qicRegex = /QIC:<\/strong>([^<]*)<\/li>/;
     var paxRegex = /The PAX:<\/strong>([^<]*)<\/li>/;
     var whenRegex = /When:<\/strong>([^<]*)<\/li>/;
     var paxList = "";
     var paxCount = 0;
     var when = "";
+    var qic = "";
     var paxMatch = paxRegex.exec(body);
+    var qicMatch = qicRegex.exec(body);
     var whenMatch = whenRegex.exec(body) && whenRegex.exec(body).length > 0 ? whenRegex.exec(body)[1].trim() : '';
     if (paxMatch) {
         // in case we ever want to capture the actual pax list
-        paxList = paxMatch[1];
-        paxCount = paxList.split(",").length;
+        paxList = paxMatch[1].split(",").map(clean);
+        paxCount = paxList.length;
+    }
+    if (qicMatch) {
+        qic = qicMatch[1];
+        if(paxList && paxList.indexOf(qic) == -1) {
+            paxCount++;
+            paxList.push(qic);
+        }
     }
     if (whenMatch) {
         when = whenMatch;
@@ -140,4 +150,8 @@ function getAdditionalData(item) {
         paxList: paxList,
         category: c
     };
+}
+
+function clean(input) {
+    return input.replace(/[^A-Za-z0-9]/g,"").toLowerCase().trim();
 }
