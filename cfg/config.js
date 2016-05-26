@@ -12,20 +12,31 @@ function getConfiguration() {
      * fileId: File Id for Google sheet.  Open Sheet in browser and copy
      * string after the d/ up to /edit
      *
-     * sheetName: Name of the sheet inside the google sheet, assumes Columns are:
+     * countsSheetName: Name of the sheet inside the google sheet, assumes Columns are:
      *  Date, Categories, Count, Url
+     *
+     * attendanceSheetName: Name of the sheet inside the google sheet for
+     * attendance, assumes Columns are:
+     * Pax Name, Count
      */
     var backblast_config = {
         url: "http://f3nation.com/locations/fort-mill-sc/feed/",
-        fileId: "your-file-id-here",
-        sheetName: "BB Counts"
+        fileId: "abc-123"
+        countsSheetName: "BB Counts",
+        attendanceSheetName: "BB Attendance"
     };
 
     /* Trello Curation Configuration
      *
      */
     var trello_config = {
-        apiKey: ""
+        apiKey: "aaa-your-api-key",
+        token: "bbb-your-token",
+        boardName: "Newsletter",
+        inboxList: "Inbox",
+        newContentList: "New This Week",
+        oldContentList: "Still Fresh",
+        retiredContentList: "Retired"
     };
     return {
         backblast_config: backblast_config,
