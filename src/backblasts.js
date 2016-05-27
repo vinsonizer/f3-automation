@@ -56,7 +56,7 @@ function main(cfg) {
  */
 function getSheet(cfg) {
     var file = SpreadsheetApp.openById(cfg.fileId);
-    var sheet = file.getSheetByName(cfg.sheetName);
+    var sheet = file.getSheetByName(cfg.countsSheetName);
     return sheet;
 }
 
