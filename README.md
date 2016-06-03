@@ -28,6 +28,7 @@ To create a working project, there are a few steps that must be completed.
 1. NodeJs installed with npm
 2. `npm install -g node-google-apps-script`
 3. `npm install -g gulp`
+4. `npm install`
 
 ## Setup
 
