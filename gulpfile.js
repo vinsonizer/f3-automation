@@ -6,6 +6,7 @@ var cleanDest = require('gulp-clean-dest');
 
 var srcRoot = './src/';
 var cfgRoot = './cfg/';
+var libRoot = './lib/';
 var buildDir = './build/';
 
 gulp.task('prepare-upload', function() {
@@ -14,6 +15,11 @@ gulp.task('prepare-upload', function() {
         .pipe(jshint.reporter('jshint-stylish'))
         .pipe(jshint.reporter('fail'))
         .pipe(gulp.dest(buildDir));
+
+    // No lint on minified downloaded libraries...
+    gulp.src([libRoot + '*.js'])
+        .pipe(gulp.dest(buildDir));
+
 });
 
 gulp.task('upload',
