@@ -20,4 +20,4 @@ gapps.config.json
 build
 
 # config files (keep defaults in SCM)
-cfg
+cfg/config.js
