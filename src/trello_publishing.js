@@ -1,6 +1,6 @@
-function test() {
-    var newsletter = getNewsletterContent();
-    //debugger;
+function doGet(e) {
+  var params = JSON.stringify(e);
+  return HtmlService.createHtmlOutput(getNewsletterContent());
 }
 
 function getNewsletterContent() {
@@ -14,12 +14,11 @@ function getNewsletterContent() {
 function getListContent(listName) {
     var listId = getTargetListId(listName);
     var cards = callTrelloApi("/lists/" + listId + "/cards/?");
-    var content = cards.reduce(concatCards, listName + "\n\n");
+    var concatCards = function(fullContent, card) {
+      return fullContent + card.desc + "\n---\n";
+    };
+    var content = cards.reduce(concatCards, "# " + listName + "\n---\n");
     return micromarkdown.parse(content);
-}
-
-function concatCards(fullContent, card) {
-    return fullContent + card.desc + "\n\n-----";
 }
 
 function getTargetListId(listName) {
