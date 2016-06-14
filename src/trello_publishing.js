@@ -1,6 +1,6 @@
 function doGet(e) {
-  var params = JSON.stringify(e);
-  return HtmlService.createHtmlOutput(getNewsletterContent());
+    var params = JSON.stringify(e);
+    return HtmlService.createHtmlOutput(getNewsletterContent());
 }
 
 function getNewsletterContent() {
@@ -15,10 +15,22 @@ function getListContent(listName) {
     var listId = getTargetListId(listName);
     var cards = callTrelloApi("/lists/" + listId + "/cards/?");
     var concatCards = function(fullContent, card) {
-      return fullContent + card.desc + "\n---\n";
+        return fullContent + card.desc + "\n---\n";
     };
     var content = cards.reduce(concatCards, "# " + listName + "\n---\n");
-    return micromarkdown.parse(content);
+    return formatMarkdown(content);
+}
+
+function formatMarkdown(content) {
+    var response = UrlFetchApp.fetch("https://api.github.com/markdown", {
+        "method": "post",
+        "headers": {},
+        "payload": JSON.stringify({
+            "mode": "gfm",
+            "text": content
+        })
+    });
+    return response.getContentText();
 }
 
 function getTargetListId(listName) {
