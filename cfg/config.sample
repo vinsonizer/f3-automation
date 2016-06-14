@@ -38,8 +38,21 @@ function getConfiguration() {
         oldContentList: "Still Fresh",
         retiredContentList: "Retired"
     };
+
+    var twitter_config = {
+        consumerKey: "a",
+        consumerSecret: "b"
+    };
+
+    var twitter_config = {
+        consumerKey:"a",
+        consumerSecret:"b",
+        retweetMonitoringSearch: "%40thefortcomz%20%23rt"
+    ];
+
     return {
         backblast_config: backblast_config,
-        trello_config: trello_config
+        trello_config: trello_config,
+        twitter_config: twitter_config
     };
 }
