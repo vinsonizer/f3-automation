@@ -88,15 +88,21 @@ function insertRow(item, sheet) {
   var url = item.getChildText('link');
   var author = item.getChildText('author');
 
+  var bbLink = item.getChildText("link");
+  var categories = item.getChildren("category").map(function(cat) {
+    cat.getText();
+  });
 
-  var additional = getAdditionalData(item);
-  var date = new Date(item.getChildText('pubDate'));
-  sheet.insertRowBefore(2);
-  sheet.getRange('A2:D2').setValues([
-    [
-      additional.date, additional.category, additional.paxCount, url
-    ]
-  ]);
+  var additional = getAdditionalData(bbLink, categories);
+  if (addtional.paxCount > 1) {
+    var date = new Date(item.getChildText('pubDate'));
+    sheet.insertRowBefore(2);
+    sheet.getRange('A2:D2').setValues([
+      [
+        additional.date, additional.category, additional.paxCount, url
+      ]
+    ]);
+  }
 }
 
 /**
@@ -107,14 +113,13 @@ function insertRow(item, sheet) {
  * @param {Object} item XML object representing the feed item
  * @return {Object} an object with the date, pax count, pax list, and Categories
  */
-function getAdditionalData(item) {
-  var url = item.getChildText('link');
-  var body = UrlFetchApp.fetch(url).getContentText();
+function getAdditionalData(bbLink, categoryArray) {
+  var body = UrlFetchApp.fetch(bbLink).getContentText();
 
   var qicRegex = /QIC:<\/strong>([^<]*)<\/li>/;
   var paxRegex = /The PAX:<\/strong>([^<]*)<\/li>/;
   var whenRegex = /When:<\/strong>([^<]*)<\/li>/;
-  var paxList = "";
+  var paxList = [];
   var paxCount = 0;
   var when = "";
   var qic = "";
@@ -127,7 +132,7 @@ function getAdditionalData(item) {
     paxCount = paxList.length;
   }
   if (qicMatch) {
-    qic = qicMatch[1];
+    qic = clean(qicMatch[1]);
     if (paxList && paxList.indexOf(qic) == -1) {
       paxCount++;
       paxList.push(qic);
@@ -137,11 +142,10 @@ function getAdditionalData(item) {
     when = whenMatch;
   }
 
-  var cats = item.getChildren('category');
-
   var c = "";
-  for (var i = 0; i < cats.length; i++) {
-    c = cats[i].getText();
+  for (var i = 0; i < categoryArray.length; i++) {
+    // only takes last for now...
+    c = categoryArray[i];
   }
 
   return {
@@ -156,9 +160,11 @@ function clean(input) {
   return input.replace(/[^A-Za-z0-9]/g, "").toLowerCase().trim();
 }
 
+// this block is for when running in node outside of GAS
 if (typeof exports !== 'undefined') {
-  exports.clean = clean;
+  var UrlFetchApp = {
+    fetch: function() {}
+  };
   exports.getAdditionalData = getAdditionalData;
-  exports.getItems = getItems;
-  exports.main = main;
+  exports.UrlFetchApp = UrlFetchApp;
 }
