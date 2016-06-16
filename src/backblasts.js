@@ -94,7 +94,7 @@ function insertRow(item, sheet) {
   });
 
   var additional = getAdditionalData(bbLink, categories);
-  if (addtional.paxCount > 1) {
+  if (additional.paxCount > 1) {
     var date = new Date(item.getChildText('pubDate'));
     sheet.insertRowBefore(2);
     sheet.getRange('A2:D2').setValues([
