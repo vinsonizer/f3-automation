@@ -21,7 +21,7 @@ function getConfiguration() {
      */
     var backblast_config = {
         url: "http://f3nation.com/locations/fort-mill-sc/feed/",
-        fileId: "abc-123"
+        fileId: "abc-123",
         countsSheetName: "BB Counts",
         attendanceSheetName: "BB Attendance"
     };
@@ -37,11 +37,6 @@ function getConfiguration() {
         newContentList: "New This Week",
         oldContentList: "Still Fresh",
         retiredContentList: "Retired"
-    };
-
-    var twitter_config = {
-        consumerKey: "a",
-        consumerSecret: "b"
     };
 
     var twitter_config = {
