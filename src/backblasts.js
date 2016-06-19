@@ -23,7 +23,8 @@ function BackblastChecker(cfg) {
   this.checkBackblasts = function() {
 
     var url = cfg.url;
-    var ss = this.getSheet(cfg);
+    var countSheet = this.getCountsSheet(cfg);
+    var attendSheet = this.getAttendanceSheet(cfg);
 
     var property = PropertiesService.getScriptProperties();
     var last_update = property.getProperty('last_update');
@@ -35,9 +36,17 @@ function BackblastChecker(cfg) {
     var date = new Date();
     while (i > -1) {
       var item = items[i--];
+
+      var bbLink = item.getChildText("link");
+      var body = UrlFetchApp.fetch(bbLink).getContentText();
+      var additional = this.getAdditionalData(body);
+
       date = new Date(item.getChildText('pubDate'));
       if (date.getTime() > last_update) {
-        this.insertRow(item, ss);
+        this.insertCountRow(item, bbLink, body, additional, countSheet);
+        for (var j = 0; j < additional.paxList.length; j++) {
+          this.insertOrUpdateAttendance(additional.paxList[j], additional.date, bbLink, attendSheet);
+        }
       }
     }
     property.setProperty('last_update', date.getTime());
@@ -49,12 +58,17 @@ function BackblastChecker(cfg) {
    * @param {Object} cfg Configuration Object with all settings for this to work
    * @return {Object} configured sheet reference.
    */
-  this.getSheet = function() {
+  this.getCountsSheet = function() {
     var file = SpreadsheetApp.openById(cfg.fileId);
     var sheet = file.getSheetByName(cfg.countsSheetName);
     return sheet;
   };
 
+  this.getAttendanceSheet = function() {
+    var file = SpreadsheetApp.openById(cfg.fileId);
+    var sheet = file.getSheetByName(cfg.attendanceSheetName);
+    return sheet;
+  };
   /**
    * Takes text of an RSS feed, parses to XML objects and then returns
    * and array of items for processing
@@ -78,29 +92,49 @@ function BackblastChecker(cfg) {
    * @param {Object} sheet a reference to the configured Google sheet
    */
 
-  this.insertRow = function(item, sheet) {
-    var title = item.getChildText('title');
-    var url = item.getChildText('link');
-    var author = item.getChildText('author');
-
-    var bbLink = item.getChildText("link");
+  this.insertCountRow = function(item, bbLink, body, additional, sheet) {
     var cats = item.getChildren('category');
-    var categories = [];
-
-    for (var i = 0; i < cats.length; i++) {
-      categories.push(cats[i].getText());
-    }
-
-    var body = UrlFetchApp.fetch(bbLink).getContentText();
-    var additional = this.getAdditionalData(body, categories);
+    // only takes last for now...
+    var category = cats[cats.length - 1].getText();
     if (additional.paxCount > 1) {
       sheet.insertRowBefore(2);
       sheet.getRange('A2:D2').setValues([
         [
-          additional.date, additional.category, additional.paxCount, url
+          additional.date, category, additional.paxCount, bbLink
         ]
       ]);
     }
+  };
+
+  this.insertOrUpdateAttendance = function(pax, bbDate, bbLink, sheet) {
+    var range = sheet.getDataRange();
+    var values = range.getValues();
+    var notFound = true;
+    for (var i = 0; i < values.length; i++) {
+      if (values[i][0] == pax) {
+        var rowNum = i + 1;
+        this.updateAttendanceRecord("A" + rowNum + ":C" + rowNum, pax, bbDate, bbLink);
+        notFound = false;
+      }
+    }
+    if (notFound) {
+      sheet.insertRowBefore(2);
+      this.updateAttendanceRecord('A2:C2', pax, bbDate, bbLink);
+    }
+  };
+
+  this.updateAttendanceRecord = function(range, pax, bbDate, bbLink) {
+    sheet.getRange(range).setValues([
+      [
+        pax, bbDate, bbLink
+      ]
+    ]);
+  };
+
+  this.seedAttendanceData = function() {
+    var bbRegex = /class="indextitle">\W+<a href="([^"]*)" title/g;
+    // repeat this over and over...
+    bbRegex.exec(blahblah);
   };
 
   /**
@@ -111,7 +145,7 @@ function BackblastChecker(cfg) {
    * @param {Object} item XML object representing the feed item
    * @return {Object} an object with the date, pax count, pax list, and Categories
    */
-  this.getAdditionalData = function(body, categoryArray) {
+  this.getAdditionalData = function(body) {
     var qicRegex = /QIC:<\/strong>([^<]*)<\/li>/;
     var paxRegex = /The PAX:<\/strong>([^<]*)<\/li>/;
     var whenRegex = /When:<\/strong>([^<]*)<\/li>/;
@@ -138,14 +172,10 @@ function BackblastChecker(cfg) {
       when = whenMatch;
     }
 
-    // only takes last for now...
-    var c = categoryArray[categoryArray.length - 1];
-
     return {
       date: when,
       paxCount: paxCount,
-      paxList: paxList,
-      category: c
+      paxList: paxList
     };
   };
 
