@@ -14,17 +14,22 @@ function checkBackblasts() {
 }
 
 function BackblastChecker(cfg) {
+  this.cfg = cfg;
+}
+
+BackblastChecker.prototype = {
+  constructor: BackblastChecker,
   /**
    * Main fuction to drive the logic for the script.
    * Most of this code was originally contributed by Wingman (Trent Jones)
    *
    * Credit: https://gist.github.com/agektmr
    */
-  this.checkBackblasts = function() {
+  checkBackblasts: function() {
 
-    var url = cfg.url;
-    var countSheet = this.getCountsSheet(cfg);
-    var attendSheet = this.getAttendanceSheet(cfg);
+    var url = this.cfg.url;
+    var countSheet = this.getCountsSheet();
+    var attendSheet = this.getAttendanceSheet();
 
     var property = PropertiesService.getScriptProperties();
     var last_update = property.getProperty('last_update');
@@ -50,25 +55,25 @@ function BackblastChecker(cfg) {
       }
     }
     property.setProperty('last_update', date.getTime());
-  };
+  },
 
   /**
    * Get the configured sheet object to write to.
    *
-   * @param {Object} cfg Configuration Object with all settings for this to work
    * @return {Object} configured sheet reference.
    */
-  this.getCountsSheet = function() {
-    var file = SpreadsheetApp.openById(cfg.fileId);
-    var sheet = file.getSheetByName(cfg.countsSheetName);
+  getCountsSheet: function() {
+    var file = SpreadsheetApp.openById(this.cfg.fileId);
+    var sheet = file.getSheetByName(this.cfg.countsSheetName);
     return sheet;
-  };
+  },
 
-  this.getAttendanceSheet = function() {
-    var file = SpreadsheetApp.openById(cfg.fileId);
-    var sheet = file.getSheetByName(cfg.attendanceSheetName);
+  getAttendanceSheet: function() {
+    var file = SpreadsheetApp.openById(this.cfg.fileId);
+    var sheet = file.getSheetByName(this.cfg.attendanceSheetName);
     return sheet;
-  };
+  },
+
   /**
    * Takes text of an RSS feed, parses to XML objects and then returns
    * and array of items for processing
@@ -76,13 +81,13 @@ function BackblastChecker(cfg) {
    * @param {String} feed A textual representation of an RSS feed.
    * @return {Object} Array of items for processing.
    */
-  this.getItems = function(feed) {
+  getItems: function(feed) {
     var doc = XmlService.parse(feed);
     var root = doc.getRootElement();
     var channel = root.getChild('channel');
     var items = channel.getChildren('item');
     return items;
-  };
+  },
 
   /**
    * Takes an item and a sheet reference.  Inserts the item values in row two,
@@ -92,7 +97,7 @@ function BackblastChecker(cfg) {
    * @param {Object} sheet a reference to the configured Google sheet
    */
 
-  this.insertCountRow = function(item, bbLink, body, additional, sheet) {
+  insertCountRow: function(item, bbLink, body, additional, sheet) {
     var cats = item.getChildren('category');
     // only takes last for now...
     var category = cats[cats.length - 1].getText();
@@ -104,9 +109,9 @@ function BackblastChecker(cfg) {
         ]
       ]);
     }
-  };
+  },
 
-  this.insertOrUpdateAttendance = function(pax, bbDate, bbLink, sheet) {
+  insertOrUpdateAttendance: function(pax, bbDate, bbLink, sheet) {
     var range = sheet.getDataRange();
     var values = range.getValues();
     var notFound = true;
@@ -121,19 +126,19 @@ function BackblastChecker(cfg) {
       sheet.insertRowBefore(2);
       this.updateAttendanceRecord(sheet, 'A2:C2', pax, bbDate, bbLink);
     }
-  };
+  },
 
-  this.updateAttendanceRecord = function(sheet, range, pax, bbDate, bbLink) {
+  updateAttendanceRecord: function(sheet, range, pax, bbDate, bbLink) {
     sheet.getRange(range).setValues([
       [
         pax, bbDate, bbLink
       ]
     ]);
-  };
+  },
 
-  this.seedAttendanceData = function() {
+  seedAttendanceData: function() {
     var bbRegex = /class="indextitle">\W+<a href="([^"]*)" title/g;
-    var attendSheet = this.getAttendanceSheet(cfg);
+    var attendSheet = this.getAttendanceSheet();
     for (var i = 1; i > 0; i--) {
       var url = "http://f3nation.com/locations/fort-mill-sc/page/" + i;
       var bbListBody = UrlFetchApp.fetch(url).getContentText();
@@ -155,7 +160,7 @@ function BackblastChecker(cfg) {
     }
 
     // repeat this over and over...
-  };
+  },
 
   /**
    * This function takes an RSS feed item, connects to the URL of the feed
@@ -165,7 +170,7 @@ function BackblastChecker(cfg) {
    * @param {Object} item XML object representing the feed item
    * @return {Object} an object with the date, pax count, pax list, and Categories
    */
-  this.getAdditionalData = function(body) {
+  getAdditionalData: function(body) {
     var qicRegex = /QIC:<\/strong>([^<]*)<\/li>/;
     var paxRegex = /The PAX:<\/strong>([^<]*)<\/li>/;
     var whenRegex = /When:<\/strong>([^<]*)<\/li>/;
@@ -197,12 +202,12 @@ function BackblastChecker(cfg) {
       paxCount: paxCount,
       paxList: paxList
     };
-  };
+  },
 
-  this.clean = function(input) {
+  clean: function(input) {
     return input.replace(/[^A-Za-z0-9]/g, "").toLowerCase().trim();
-  };
-}
+  }
+};
 
 // this block is for when running in node outside of GAS
 if (typeof exports !== 'undefined') {

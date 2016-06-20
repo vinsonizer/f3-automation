@@ -1,6 +1,7 @@
 var assert = require("chai").assert;
 var bb = require("../src/backblasts.js").BackblastChecker;
 
+
 describe('Backblasts Additional Data', function() {
   describe('getAdditionalData', function() {
     it('should parse out workout dates', function() {
