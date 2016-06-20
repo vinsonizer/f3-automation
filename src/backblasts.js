@@ -113,17 +113,17 @@ function BackblastChecker(cfg) {
     for (var i = 0; i < values.length; i++) {
       if (values[i][0] == pax) {
         var rowNum = i + 1;
-        this.updateAttendanceRecord("A" + rowNum + ":C" + rowNum, pax, bbDate, bbLink);
+        this.updateAttendanceRecord(sheet, "A" + rowNum + ":C" + rowNum, pax, bbDate, bbLink);
         notFound = false;
       }
     }
     if (notFound) {
       sheet.insertRowBefore(2);
-      this.updateAttendanceRecord('A2:C2', pax, bbDate, bbLink);
+      this.updateAttendanceRecord(sheet, 'A2:C2', pax, bbDate, bbLink);
     }
   };
 
-  this.updateAttendanceRecord = function(range, pax, bbDate, bbLink) {
+  this.updateAttendanceRecord = function(sheet, range, pax, bbDate, bbLink) {
     sheet.getRange(range).setValues([
       [
         pax, bbDate, bbLink
@@ -133,8 +133,28 @@ function BackblastChecker(cfg) {
 
   this.seedAttendanceData = function() {
     var bbRegex = /class="indextitle">\W+<a href="([^"]*)" title/g;
+    var attendSheet = this.getAttendanceSheet(cfg);
+    for (var i = 1; i > 0; i--) {
+      var url = "http://f3nation.com/locations/fort-mill-sc/page/" + i;
+      var bbListBody = UrlFetchApp.fetch(url).getContentText();
+      var match = bbRegex.exec(bbListBody);
+      while (match !== null) {
+        var bbLink = match[1];
+        var bbBody = UrlFetchApp.fetch(bbLink).getContentText();
+        var additional = this.getAdditionalData(bbBody);
+
+        for (var j = 0; j < additional.paxList.length; j++) {
+          this.insertOrUpdateAttendance(additional.paxList[j], additional.date, bbLink, attendSheet);
+        }
+
+        match = bbRegex.exec(bbListBody);
+      }
+      Logger.log("finished page " + i);
+
+
+    }
+
     // repeat this over and over...
-    bbRegex.exec(blahblah);
   };
 
   /**

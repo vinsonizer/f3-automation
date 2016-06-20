@@ -28,11 +28,5 @@ describe('Backblasts Additional Data', function() {
       assert(result.paxList.indexOf("gears") != -1, "Should capture QIC as a PAX");
       assert(result.paxList.indexOf("wingman") != -1, "Should capture non-QIC as a PAX");
     });
-    it('should pull the last category as the overall category', function() {
-      var content = "<li><strong>QIC:</strong>Gears</li>" +
-        "<li><strong>The PAX:</strong>Wingman,  Gears</li>";
-      var result = bb.getAdditionalData(content, ["First", "Middle", "Last"]);
-      assert(result.category == "Last", "Should take last category");
-    });
   });
 });
