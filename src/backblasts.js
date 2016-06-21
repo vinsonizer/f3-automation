@@ -10,7 +10,7 @@
  * Main function that should be invoked by trigger
  */
 function checkBackblasts() {
-  new BackblastChecker(getConfiguration().backblast_config).checkBackblasts();
+  new BackblastChecker(config.backblast_config).checkBackblasts();
 }
 
 function BackblastChecker(cfg) {
@@ -27,7 +27,7 @@ BackblastChecker.prototype = {
    */
   checkBackblasts: function() {
 
-    var url = this.cfg.url;
+    var url = this.cfg.feedUrl;
     var countSheet = this.getCountsSheet();
     var attendSheet = this.getAttendanceSheet();
 
@@ -116,7 +116,7 @@ BackblastChecker.prototype = {
     var values = range.getValues();
     var notFound = true;
     for (var i = 0; i < values.length; i++) {
-      if (values[i][0] == pax) {
+      if (values[i][0] === pax) {
         var rowNum = i + 1;
         this.updateAttendanceRecord(sheet, "A" + rowNum + ":C" + rowNum, pax, bbDate, bbLink);
         notFound = false;
@@ -140,7 +140,7 @@ BackblastChecker.prototype = {
     var bbRegex = /class="indextitle">\W+<a href="([^"]*)" title/g;
     var attendSheet = this.getAttendanceSheet();
     for (var i = 1; i > 0; i--) {
-      var url = "http://f3nation.com/locations/fort-mill-sc/page/" + i;
+      var url = this.cfg.pageUrl + i;
       var bbListBody = UrlFetchApp.fetch(url).getContentText();
       var match = bbRegex.exec(bbListBody);
       while (match !== null) {
@@ -188,14 +188,12 @@ BackblastChecker.prototype = {
     }
     if (qicMatch) {
       qic = this.clean(qicMatch[1]);
-      if (paxList && paxList.indexOf(qic) == -1) {
+      if (paxList && paxList.indexOf(qic) === -1) {
         paxCount++;
         paxList.push(qic);
       }
     }
-    if (whenMatch) {
-      when = whenMatch;
-    }
+    when = whenMatch || new Date();
 
     return {
       date: when,

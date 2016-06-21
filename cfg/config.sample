@@ -4,50 +4,53 @@
  * for their region.  Each section is for a seperate module, so you should
  * only have to configure what you use.
  */
-function getConfiguration() {
-  /* Backblast Counts Automation
-   *
-   * url: Feed by region, if you go to your schedules landing page you find it
-   *
-   * fileId: File Id for Google sheet.  Open Sheet in browser and copy
-   * string after the d/ up to /edit
-   *
-   * countsSheetName: Name of the sheet inside the google sheet, assumes Columns are:
-   *  Date, Categories, Count, Url
-   *
-   * attendanceSheetName: Name of the sheet inside the google sheet for
-   * attendance, assumes Columns are:
-   * Pax Name, Count
-   */
-  var backblast_config = {
-    url: "http://f3nation.com/locations/fort-mill-sc/feed/",
-    fileId: "abc-123",
-    countsSheetName: "BB Counts",
-    attendanceSheetName: "BB Attendance"
-  };
+ var config = (function () {
+    "use strict";
+    /* Backblast Counts Automation
+     *
+     * url: Feed by region, if you go to your schedules landing page you find it
+     *
+     * fileId: File Id for Google sheet.  Open Sheet in browser and copy
+     * string after the d/ up to /edit
+     *
+     * countsSheetName: Name of the sheet inside the google sheet, assumes Columns are:
+     *  Date, Categories, Count, Url
+     *
+     * attendanceSheetName: Name of the sheet inside the google sheet for
+     * attendance, assumes Columns are:
+     * Pax Name, Count
+     */
+    var baseUrl = "http://f3nation.com/locations/charlotte-south-nc/",
+        backblast_config = {
+            fileId: "your-file-id",
+            countsSheetName: "BB Counts",
+            attendanceSheetName: "BB Attendance",
+            feedUrl: baseUrl + "feed/",
+            pageUrl: baseUrl + "page/"
+        };
+    
+    /* Trello Curation Configuration
+     *
+     */
+    var trello_config = {
+        apiKey: "aaa-your-api-key",
+        token: "bbb-your-token",
+        boardName: "Newsletter",
+        inboxList: "Inbox",
+        newContentList: "New This Week",
+        oldContentList: "Still Fresh",
+        retiredContentList: "Retired"
+    };
 
-  /* Trello Curation Configuration
-   *
-   */
-  var trello_config = {
-    apiKey: "aaa-your-api-key",
-    token: "bbb-your-token",
-    boardName: "Newsletter",
-    inboxList: "Inbox",
-    newContentList: "New This Week",
-    oldContentList: "Still Fresh",
-    retiredContentList: "Retired"
-  };
+    var twitter_config = {
+        consumerKey: "a",
+        consumerSecret: "b",
+        retweetMonitoringSearch: "%40thefortcomz%20%23rt"
+    };
 
-  var twitter_config = {
-    consumerKey: "a",
-    consumerSecret: "b",
-    retweetMonitoringSearch: "%40thefortcomz%20%23rt"
-  };
-
-  return {
-    backblast_config: backblast_config,
-    trello_config: trello_config,
-    twitter_config: twitter_config
-  };
-}
+    return {
+        backblast_config: backblast_config,
+        trello_config: trello_config,
+        twitter_config: twitter_config
+    };
+}());

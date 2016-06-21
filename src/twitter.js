@@ -65,7 +65,7 @@ TwitterService.prototype = {
    * Configures the service.
    */
   getService: function() {
-    var cfg = getConfiguration().twitter_config;
+    var cfg = config.twitter_config;
     return OAuth1.createService('Twitter')
       // Set the endpoint URLs.
       .setAccessTokenUrl('https://api.twitter.com/oauth/access_token')
@@ -104,7 +104,7 @@ function reset() {
 }
 
 function processRetweets() {
-  var client = new TwitterClient(new TwitterService().getService(), getConfiguration().twitter_config);
+  var client = new TwitterClient(new TwitterService().getService(), config.twitter_config);
   client.processRetweets();
 }
 

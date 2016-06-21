@@ -35,12 +35,17 @@ To create a working project, there are a few steps that must be completed.
 ### Creation of a Project and Credentials in Google Apps Scripts
 Go to script.google.com and create a new project (I named mine f3-automation).  Click Resources -> Developers Console Project.  On this new window, click the blue link for your project (e.g. f3-automation - project-id-abc123xyz456).  In the Google API window that opens, click Credentials.  Click Create Credentials and choose OAuth Client ID.  For application type, choose other and give it a name.  Click the download link to download a json file for your new project.  
 
+### Authorize the credentials
+From local console window authorize the credentials downloaded.
+
+`gapps auth your-credential-file
+
 ### Initialize local project
 Back in the main script.google.com page for your project, get the project id from the url. It is the value between the /d and /edit (again, we use project-id-abc123xyz456 as an example here).  In this project folder, run the following command:
 
 `gapps init project-id-abc123xyz456`
 
-This will create a gapps.config.json file with the configuration needed.  
+This will create a gapps.config.json file with the configuration needed. To use files generated into the 'build' folder open the gapps.config.json file and change the path variable from "src" to "build"
 
 ### Configuration and Deployment
 All configuration is isolated in the cfg folder in the config.js (see the Required Configuration section above).  If you want out of the box behavior, this is all your have to touch.  If you want to customize things beyond the config values, you can edit the source in the src folder.  All source should be in the src folder and will by synchronized to the script.google.com site by running:
