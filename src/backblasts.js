@@ -118,20 +118,20 @@ BackblastChecker.prototype = {
     for (var i = 0; i < values.length; i++) {
       if (values[i][0] === pax) {
         var rowNum = i + 1;
-        this.updateAttendanceRecord(sheet, "A" + rowNum + ":C" + rowNum, pax, bbDate, bbLink);
+        this.updateAttendanceRecord(sheet, "A" + rowNum + ":D" + rowNum, pax, bbDate, bbLink, 1);
         notFound = false;
       }
     }
     if (notFound) {
       sheet.insertRowBefore(2);
-      this.updateAttendanceRecord(sheet, 'A2:C2', pax, bbDate, bbLink);
+      this.updateAttendanceRecord(sheet, 'A2:D2', pax, bbDate, bbLink, 1); 
     }
   },
 
-  updateAttendanceRecord: function(sheet, range, pax, bbDate, bbLink) {
+  updateAttendanceRecord: function(sheet, range, pax, bbDate, bbLink, count) {
     sheet.getRange(range).setValues([
       [
-        pax, bbDate, bbLink
+        pax, bbDate, bbLink, count
       ]
     ]);
   },
