@@ -4,7 +4,7 @@ function doGet(e) {
 }
 
 function getNewsletterContent() {
-  var cfg = getConfiguration().trello_config;
+  var cfg = config.trello_config;
   var newListContent = getListContent(cfg.newContentList);
   var oldListContent = getListContent(cfg.oldContentList);
   var retiredListContent = getListContent(cfg.retiredContentList);
@@ -34,7 +34,7 @@ function formatMarkdown(content) {
 }
 
 function getTargetListId(listName) {
-  var cfg = getConfiguration().trello_config;
+  var cfg = config.trello_config;
   var boards = callTrelloApi("members/me/boards?");
   var targetBoardId = (boards.filter(function(board, index) {
     return board.name == cfg.boardName;
@@ -47,7 +47,7 @@ function getTargetListId(listName) {
 }
 
 function callTrelloApi(apiCall) {
-  var cfg = getConfiguration().trello_config;
+  var cfg = config.trello_config;
   var url = "https://api.trello.com/1/" + apiCall + "key=" + cfg.apiKey + "&token=" + cfg.token;
   var resultJson = UrlFetchApp.fetch(url).getContentText();
   var data = JSON.parse(resultJson);

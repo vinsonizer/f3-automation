@@ -1,22 +1,31 @@
-var gulp = require('gulp');
+
 var shell = require('gulp-shell');
 var mocha = require('gulp-mocha');
 var watch = require('gulp-watch');
 var jshint = require('gulp-jshint');
 var cleanDest = require('gulp-clean-dest');
+var gulp = require('gulp');
 
 var srcRoot = './src/';
 var cfgRoot = './cfg/';
 var tstRoot = './test/';
 var buildDir = './build/';
 
-gulp.task('prepare-upload', function() {
-  gulp.src([srcRoot + '*.js', cfgRoot + '*.js'])
-    .pipe(jshint())
-    .pipe(jshint.reporter('jshint-stylish'))
-    .pipe(jshint.reporter('fail'))
-    .pipe(gulp.dest(buildDir));
+gulp.task('lint', function(){
+    return gulp.src([
+        srcRoot + '*.js', 
+        cfgRoot + '*.js'])
+        .pipe(jshint())
+        .pipe(jshint.reporter('jshint-stylish'))
+        //.pipe(jshint.reporter('fail')); //there is an issue with this reporter: skipping
+});
 
+gulp.task('build', function(){
+    return gulp.src([
+        srcRoot + '*.js', 
+        cfgRoot + '*.js'])
+    
+    .pipe(gulp.dest(buildDir));
 });
 
 gulp.task('test', function() {
@@ -48,4 +57,4 @@ gulp.task('watch', function() {
     .pipe(gulp.task('upload'));
 });
 
-gulp.task('default', ['cleanup', 'prepare-upload', 'test', 'upload']);
+gulp.task('default', ['cleanup', 'lint', 'build', 'test', 'upload']);

@@ -21,3 +21,4 @@ build
 
 # config files (keep defaults in SCM)
 cfg/config.js
+client_secret*
