@@ -68,7 +68,7 @@ TrelloService.prototype = {
    * Reset the authorization state, so that it can be re-tested.
    */
   reset: function() {
-    var service = getService();
+    var service = this.getService();
     service.reset();
   },
 
@@ -80,7 +80,7 @@ TrelloService.prototype = {
     return OAuth1.createService('Trello')
       // Set the endpoint URLs.
       .setRequestTokenUrl('https://trello.com/1/OAuthGetRequestToken')
-      .setAuthorizationUrl('https://trello.com/1/OAuthAuthorizeToken')
+      .setAuthorizationUrl('https://trello.com/1/OAuthAuthorizeToken?expiration=' + cfg.expiration)
       .setAccessTokenUrl('https://trello.com/1/OAuthGetAccessToken')
       .setConsumerKey(cfg.consumerKey)
       .setConsumerSecret(cfg.consumerSecret)
