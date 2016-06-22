@@ -38,7 +38,7 @@ Go to script.google.com and create a new project (I named mine f3-automation).  
 ### Authorize the credentials
 From local console window authorize the credentials downloaded.
 
-`gapps auth your-credential-file
+`gapps auth your-credential-file`
 
 ### Initialize local project
 Back in the main script.google.com page for your project, get the project id from the url. It is the value between the /d and /edit (again, we use project-id-abc123xyz456 as an example here).  In this project folder, run the following command:
