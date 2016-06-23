@@ -33,8 +33,8 @@
      *
      */
     var trello_config = {
-        apiKey: "aaa-your-api-key",
-        token: "bbb-your-token",
+        consumerKey: "a",
+        consumerSecret: "b",
         boardName: "Newsletter",
         inboxList: "Inbox",
         newContentList: "New This Week",
