@@ -1,6 +1,5 @@
 function doGet(e) {
-  var params = JSON.stringify(e);
-  return HtmlService.createHtmlOutput(new TrelloNewsletterContent(new TrelloService()).getNewsletterContent());
+  return HtmlService.createHtmlOutput(new TrelloNewsletterContent(new TrelloService()).getNewsletterContent(e.parameters.nocache));
 }
 
 function trelloAuthCallback(request) {
@@ -14,12 +13,29 @@ function TrelloNewsletterContent(service) {
 TrelloNewsletterContent.prototype = {
 
   constructor: TrelloNewsletterContent,
-  getNewsletterContent: function() {
+  getNewsletterContent: function(skipCache) {
     var cfg = config.trello_config;
     var newListContent = this.getListContent(cfg.newContentList);
     var oldListContent = this.getListContent(cfg.oldContentList);
     var retiredListContent = this.getListContent(cfg.retiredContentList);
     return this.wrapHtml(newListContent + oldListContent + retiredListContent);
+  },
+
+  getNewsletterContent: function(skipCache) {
+    var scriptCache = CacheService.getScriptCache();
+    var result = scriptCache.get("newsletter-content");
+    if(skipCache ||  result == null) {
+      var cfg = config.trello_config;
+      var newListContent = this.getListContent(cfg.newContentList);
+      var oldListContent = this.getListContent(cfg.oldContentList);
+      var retiredListContent = this.getListContent(cfg.retiredContentList);
+      result = this.wrapHtml(newListContent + oldListContent + retiredListContent);
+      scriptCache.put("newsletter-content", result, 3600); // cache for 1 hour
+      Logger.log("cache miss");
+    } else {
+      Logger.log("cache hit");
+    }
+    return result;
   },
     
   wrapHtml: function(body) {
