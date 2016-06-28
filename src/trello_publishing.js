@@ -32,16 +32,11 @@ TrelloNewsletterContent.prototype = {
     return this.formatMarkdown(content);
   },
 
+  // import library M6WggW1B7uEj1Nu0p7S6Pf-Mffa6w-w2J
   formatMarkdown: function(content) {
-    var response = UrlFetchApp.fetch("https://api.github.com/markdown", {
-      "method": "post",
-      "headers": {},
-      "payload": JSON.stringify({
-        "mode": "gfm",
-        "text": content
-      })
-    });
-    return response.getContentText();
+    var converter = new GASShowdown.Showdown.converter();
+    var result = converter.makeHtml(content);
+    return result;
   },
 
   getTargetListId: function(listName) {
