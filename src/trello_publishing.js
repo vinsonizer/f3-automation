@@ -19,7 +19,15 @@ TrelloNewsletterContent.prototype = {
     var newListContent = this.getListContent(cfg.newContentList);
     var oldListContent = this.getListContent(cfg.oldContentList);
     var retiredListContent = this.getListContent(cfg.retiredContentList);
-    return newListContent + oldListContent + retiredListContent;
+    return this.wrapHtml(newListContent + oldListContent + retiredListContent);
+  },
+    
+  wrapHtml: function(body) {
+    return "<html><head>" +
+      "<link rel='stylesheet' href='//netdna.bootstrapcdn.com/bootstrap/3.0.1/css/bootstrap.min.css'></link>" +
+      "<meta name='viewport' content='width=device-width, initial-scale=1, user-scalable=no'></meta>" +
+      "<title>Newsletter Content</title></head><body><div class='container'>" +
+      body + "</container></body></html>";
   },
 
   getListContent: function(listName) {
