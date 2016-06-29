@@ -57,7 +57,7 @@ TwitterService.prototype = {
    * Reset the authorization state, so that it can be re-tested.
    */
   reset: function() {
-    var service = getService();
+    var service = this.getService();
     service.reset();
   },
 
@@ -85,7 +85,7 @@ TwitterService.prototype = {
    * Handles the OAuth callback.
    */
   authCallback: function(request) {
-    var service = getService();
+    var service = this.getService();
     var authorized = service.handleCallback(request);
     if (authorized) {
       return HtmlService.createHtmlOutput('Success!');
