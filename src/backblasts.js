@@ -124,7 +124,7 @@ BackblastChecker.prototype = {
     }
     if (notFound) {
       sheet.insertRowBefore(2);
-      this.updateAttendanceRecord(sheet, 'A2:D2', pax, bbDate, bbLink, 1); 
+      this.updateAttendanceRecord(sheet, 'A2:D2', pax, bbDate, bbLink, 1);
     }
   },
 
@@ -187,10 +187,13 @@ BackblastChecker.prototype = {
       paxCount = paxList.length;
     }
     if (qicMatch) {
-      qic = this.clean(qicMatch[1]);
-      if (paxList && paxList.indexOf(qic) === -1) {
-        paxCount++;
-        paxList.push(qic);
+      var theMatch = qicMatch[1].split(/and|,/);
+      qic = theMatch.map(function(thing) {return this.clean(thing);}, this);
+      for(var i = 0; i < qic.length; i++) {
+        if (paxList && paxList.indexOf(qic[i]) === -1) {
+          paxCount++;
+          paxList.push(qic[i]);
+        }
       }
     }
     when = whenMatch || new Date();
@@ -203,7 +206,10 @@ BackblastChecker.prototype = {
   },
 
   clean: function(input) {
-    return input.replace(/[^A-Za-z0-9]/g, "").toLowerCase().trim();
+    var result = input.toLowerCase()
+      .replace(/\(?yhc|qic|respect|2.0|fng\)?/, "")
+      .replace(/[^A-Za-z0-9]/g, "").trim();
+    return result;
   }
 };
 
