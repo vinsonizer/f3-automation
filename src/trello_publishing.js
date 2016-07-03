@@ -14,17 +14,9 @@ TrelloNewsletterContent.prototype = {
 
   constructor: TrelloNewsletterContent,
   getNewsletterContent: function(skipCache) {
-    var cfg = config.trello_config;
-    var newListContent = this.getListContent(cfg.newContentList);
-    var oldListContent = this.getListContent(cfg.oldContentList);
-    var retiredListContent = this.getListContent(cfg.retiredContentList);
-    return this.wrapHtml(newListContent + oldListContent + retiredListContent);
-  },
-
-  getNewsletterContent: function(skipCache) {
     var scriptCache = CacheService.getScriptCache();
     var result = scriptCache.get("newsletter-content");
-    if(skipCache ||  result == null) {
+    if(skipCache ||  result === null) {
       var cfg = config.trello_config;
       var newListContent = this.getListContent(cfg.newContentList);
       var oldListContent = this.getListContent(cfg.oldContentList);
@@ -37,10 +29,11 @@ TrelloNewsletterContent.prototype = {
     }
     return result;
   },
-    
+
   wrapHtml: function(body) {
     return "<html><head>" +
       "<link rel='stylesheet' href='//netdna.bootstrapcdn.com/bootstrap/3.0.1/css/bootstrap.min.css'></link>" +
+      "<script type='javascript' href='https://code.jquery.com/jquery-3.0.0.min.js'></script>" +
       "<meta name='viewport' content='width=device-width, initial-scale=1, user-scalable=no'></meta>" +
       "<title>Newsletter Content</title></head><body><div class='container'>" +
       body + "</container></body></html>";
@@ -129,7 +122,7 @@ TrelloService.prototype = {
       var url = "https://api.trello.com/1/" + apiCall;
       var response = service.fetch(url);
       var result = JSON.parse(response.getContentText());
-      Logger.log(JSON.stringify(result, null, 2));
+      //Logger.log(JSON.stringify(result, null, 2));
       return result;
     } else {
       var authorizationUrl = service.authorize();
