@@ -20,15 +20,20 @@
      * attendance, assumes Columns are:
      * Pax Name, Count
      */
-    var baseUrl = "http://f3nation.com/locations/charlotte-south-nc/",
-        backblast_config = {
+    var baseUrl = "http://f3nation.com/locations/charlotte-south-nc/";
+    var sheets_config = {
             fileId: "your-file-id",
-            countsSheetName: "BB Counts",
+            bbCountSheetName: "BB Counts",
             attendanceSheetName: "BB Attendance",
-            feedUrl: baseUrl + "feed/",
-            pageUrl: baseUrl + "page/"
-        };
-    
+            tweetCountSheetName: "Tweet Counts"
+    };
+
+    var backblast_config = {
+        feedUrl: baseUrl + "feed/",
+        pageUrl: baseUrl + "page/"
+
+    };
+
     /* Trello Curation Configuration
      *
      */
@@ -52,6 +57,7 @@
     return {
         backblast_config: backblast_config,
         trello_config: trello_config,
-        twitter_config: twitter_config
+        twitter_config: twitter_config,
+        sheets_config: sheets_config
     };
 }());

@@ -1,13 +1,14 @@
 //https://script.google.com/macros/d/1nA0fj4a8Fga-whToZEzeqOW0gwDvpSmhav66ZT1qUa37LvX6bLoSZTgW/usercallback
 
 function TwitterClient(service, cfg) {
-    this.cfg = cfg;
-    this.propertyKey = cfg.consumerKey + '_latest_tweet_date';
+    this.cfg = cfg.twitter_config;
+    this.sheetsCfg = cfg.sheets_config;
     this.service = service;
 }
 
 TwitterClient.prototype = {
     constructor: TwitterClient,
+
     searchForTweets: function(searchString) {
         // check since yesterday, no way to pass specific time
         var latestTweetDate = new Date();
@@ -21,6 +22,7 @@ TwitterClient.prototype = {
         Logger.log("Found " + tweets.length + " for query with since date of " + sinceDate);
         return tweets;
     },
+
     retweet: function(tweet) {
         var rt_url = 'https://api.twitter.com/1.1/statuses/retweet/' + tweet.id_str + '.json';
         var rt_response = this.service.fetch(rt_url, {
@@ -28,48 +30,74 @@ TwitterClient.prototype = {
         });
         var rt_result = JSON.parse(rt_response.getContentText());
     },
+
+    handleTweets: function(tweets, binding, callback) {
+        for (var i = tweets.length - 1; i >= 0; i--) {
+            try {
+                var tweet = tweets[i];
+                Logger.log("Found tweet from " + tweet.created_at + " with text: " + tweet.text);
+                callback(tweet, binding);
+            } catch (error) {
+                Logger.log(error);
+            }
+        }
+    },
+
     processRetweets: function() {
         if (this.service.hasAccess()) {
             var tweets = this.searchForTweets(this.cfg.retweetMonitoringSearch);
-            for (var i = tweets.length - 1; i >= 0; i--) {
-                try {
-                    var tweet = tweets[i];
-                    Logger.log("Found tweet from " + tweet.created_at + " with text: " + tweet.text);
-                    this.retweet(tweet);
-                } catch (error) {
-                    Logger.log(error);
-                }
-            }
+            this.handleTweets(tweets, this, this.retweet);
         } else {
             var authorizationUrl = this.service.authorize();
             Logger.log('Open the following URL and re-run the script: %s',
                 authorizationUrl);
         }
     },
+
     pullCounts: function() {
+        // TODO: Dry this
         if (this.service.hasAccess()) {
-            // TODO: refactor this to have a tweet callback handler in stead of cut and paste
             var tweets = this.searchForTweets(this.cfg.countsMonitoringSearch);
-            for (var i = tweets.length - 1; i >= 0; i--) {
-                var tweet = tweets[i];
-                Logger.log("Found tweet from " + tweet.created_at + " with text: " + tweet.text);
-                this.recordCount(tweet);
-            }
+            this.handleTweets(tweets, this, this.logTweet);
+        } else {
+            var authorizationUrl = this.service.authorize();
+            Logger.log('Open the following URL and re-run the script: %s',
+                authorizationUrl);
         }
-        var tags = getMatches(input.text, /(?:^|\s)(?:#)([a-zA-Z\d]+)/gm, 1);
-        var numbers = getMatches(input.text, /\b([0-9]+)\b/g, 0);
     },
 
-    recordCount: function(tweet) {},
+    logTweet: function(tweet, binding) {
+        var self = binding;
+        var getMatches = function(inputText, regex, position) {
+            var matches = [];
+            var match;
 
-    getMatches: function(inputText, regex, position) {
-        var matches = [];
-        var match;
+            while ((match = regex.exec(inputText))) {
+                matches.push(match[position]);
+            }
+            return matches;
+        };
+        var tags = getMatches(tweet.text, /(?:^|\s)(?:#)([a-zA-Z\d]+)/gm, 1);
+        var numbers = getMatches(tweet.text, /\b([0-9]+)\b/g, 0);
+        var tweetId = tweet.id_str;
 
-        while ((match = regex.exec(inputText))) {
-            matches.push(match[position]);
+        var file = SpreadsheetApp.openById(self.sheetsCfg.fileId);
+        var sheet = file.getSheetByName(self.sheetsCfg.tweetCountSheetName);
+
+        var rangeValues = sheet.getRange("A2:A52");
+        // check last 50
+        var idRange = Array.apply(null, Array(50)).map(function(_, i) {
+            return rangeValues.getCell(i + 1, 1).getValue();
+        });
+
+        if (idRange.indexOf(tweetId) === -1) {
+            sheet.insertRowBefore(2);
+            sheet.getRange('A2:F2').setValues([
+                [
+                    tweetId, tweet.user.screen_name, tweet.created_at, numbers.toString(), tags.toString(), tweet.text
+                ]
+            ]);
         }
-        return matches;
     }
 };
 
@@ -129,8 +157,13 @@ function reset() {
 }
 
 function processRetweets() {
-    var client = new TwitterClient(new TwitterService().getService(), config.twitter_config);
+    var client = new TwitterClient(new TwitterService().getService(), config);
     client.processRetweets();
+}
+
+function pullCounts() {
+    var client = new TwitterClient(new TwitterService().getService(), config);
+    client.pullCounts();
 }
 
 // this block is for when running in node outside of GAS
