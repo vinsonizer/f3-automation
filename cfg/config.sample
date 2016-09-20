@@ -51,7 +51,8 @@
     var twitter_config = {
         consumerKey: "a",
         consumerSecret: "b",
-        retweetMonitoringSearch: "%40thefortcomz%20%23rt"
+        retweetMonitoringSearch: "@thefortcomz #rt",
+        countsMonitoringSearch: "@f3thefort #thefortcounts"
     };
 
     return {
