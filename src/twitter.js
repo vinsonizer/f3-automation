@@ -2,7 +2,6 @@
 
 function TwitterClient(service, cfg) {
     this.cfg = cfg.twitter_config;
-    this.sheetsCfg = cfg.sheets_config;
     this.service = service;
 }
 
@@ -81,8 +80,8 @@ TwitterClient.prototype = {
         var numbers = getMatches(tweet.text, /\b([0-9]+)\b/g, 0);
         var tweetId = tweet.id_str;
 
-        var file = SpreadsheetApp.openById(self.sheetsCfg.fileId);
-        var sheet = file.getSheetByName(self.sheetsCfg.tweetCountSheetName);
+        var file = SpreadsheetApp.getActiveSpreadsheet();
+        var sheet = file.getSheetByName(self.cfg.tweetCountSheetName);
 
         var rangeValues = sheet.getRange("A2:A52");
         // check last 50
@@ -118,7 +117,7 @@ TwitterService.prototype = {
      * Configures the service.
      */
     getService: function() {
-        var cfg = config.twitter_config;
+        var cfg = getConfig().twitter_config;
         return OAuth1.createService('Twitter')
             // Set the endpoint URLs.
             .setAccessTokenUrl('https://api.twitter.com/oauth/access_token')
@@ -157,12 +156,12 @@ function reset() {
 }
 
 function processRetweets() {
-    var client = new TwitterClient(new TwitterService().getService(), config);
+    var client = new TwitterClient(new TwitterService().getService(), getConfig());
     client.processRetweets();
 }
 
 function pullCounts() {
-    var client = new TwitterClient(new TwitterService().getService(), config);
+    var client = new TwitterClient(new TwitterService().getService(), getConfig());
     client.pullCounts();
 }
 

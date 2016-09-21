@@ -10,15 +10,11 @@
  * Main function that should be invoked by trigger
  */
 function checkBackblasts() {
-    new BackblastChecker(config).checkBackblasts();
+    new BackblastChecker(getConfig()).checkBackblasts();
 }
 
 function BackblastChecker(config) {
-    // TODO: find a better way... for unit testing
-    if (config) {
-        this.cfg = config.backblast_config;
-        this.sheetsCfg = config.sheets_config;
-    }
+  this.cfg = config.backblast_config;
 }
 
 BackblastChecker.prototype = {
@@ -59,6 +55,7 @@ BackblastChecker.prototype = {
             }
         }
         property.setProperty('last_update', date.getTime());
+      SpreadsheetApp.getActiveSpreadsheet().getSheetByName(this.cfg.bbCountSheetName).getRange("G1:G1").setValues([[new Date().toString()]]);
     },
 
     /**
@@ -67,14 +64,14 @@ BackblastChecker.prototype = {
      * @return {Object} configured sheet reference.
      */
     getCountsSheet: function() {
-        var file = SpreadsheetApp.openById(this.sheetsCfg.fileId);
-        var sheet = file.getSheetByName(this.sheetsCfg.bbCountSheetName);
+        var file = SpreadsheetApp.getActiveSpreadsheet();
+        var sheet = file.getSheetByName(this.cfg.bbCountSheetName);
         return sheet;
     },
 
     getAttendanceSheet: function() {
-        var file = SpreadsheetApp.openById(this.sheetsCfg.fileId);
-        var sheet = file.getSheetByName(this.sheetsCfg.attendanceSheetName);
+        var file = SpreadsheetApp.getActiveSpreadsheet();
+        var sheet = file.getSheetByName(this.cfg.attendanceSheetName);
         return sheet;
     },
 

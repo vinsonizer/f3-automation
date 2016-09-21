@@ -17,7 +17,7 @@ TrelloNewsletterContent.prototype = {
     var scriptCache = CacheService.getScriptCache();
     var result = scriptCache.get("newsletter-content");
     if(skipCache ||  result === null) {
-      var cfg = config.trello_config;
+      var cfg = getConfig().trello_config;
       var newListContent = this.getListContent(cfg.newContentList);
       var oldListContent = this.getListContent(cfg.oldContentList);
       var retiredListContent = this.getListContent(cfg.retiredContentList);
@@ -57,7 +57,7 @@ TrelloNewsletterContent.prototype = {
   },
 
   getTargetListId: function(listName) {
-    var cfg = config.trello_config;
+    var cfg = getConfig().trello_config;
     var boards = this.service.get("members/me/boards?");
     var targetBoardId = (boards.filter(function(board, index) {
       return board.name == cfg.boardName;
@@ -88,7 +88,7 @@ TrelloService.prototype = {
    * Configures the service.
    */
   getService: function() {
-    var cfg = config.trello_config;
+    var cfg = getConfig().trello_config;
     return OAuth1.createService('Trello')
       // Set the endpoint URLs.
       .setRequestTokenUrl('https://trello.com/1/OAuthGetRequestToken')
