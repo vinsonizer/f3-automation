@@ -1,14 +1,3 @@
-var SHEET_ID = "com.f3nation.automation.SHEET_ID";
-
-function init() {
-  var sheetId = SpreadsheetApp.getActiveSpreadsheet().getId();
-  PropertiesService.getScriptProperties().setProperty(SHEET_ID, sheetId);
-}
-
-function getSpreadsheet() {
-  return SpreadsheetApp.openById(PropertiesService.getScriptProperties().getProperty(SHEET_ID));
-}
-
 function getConfig() {
   var settingsSheet = getSpreadsheet().getSheetByName("Settings");
   var bbRange = settingsSheet.getRange("B2:B5");

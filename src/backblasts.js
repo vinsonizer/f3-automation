@@ -9,7 +9,7 @@
 /**
  * Main function that should be invoked by trigger
  */
-function checkBackblasts() {
+function backblastsCheckForUpdates() {
     new BackblastChecker().checkBackblasts();
 }
 
@@ -31,9 +31,11 @@ BackblastChecker.prototype = {
         var countSheet = this.getCountsSheet();
         var attendSheet = this.getAttendanceSheet();
 
-        var property = PropertiesService.getDocumentProperties();
-        var last_update = property.getProperty('last_update');
-        last_update = last_update === null ? 0 : parseFloat(last_update);
+        var last_update_date = getSpreadsheet()
+          .getSheetByName(this.cfg.bbCountSheetName)
+          .getRange("G1:G1").getCell(1,1).getValue();
+
+        var last_update = new Date(last_update_date).getTime();
 
         var feed = UrlFetchApp.fetch(url).getContentText();
         var items = this.getItems(feed);
@@ -54,7 +56,6 @@ BackblastChecker.prototype = {
                 }
             }
         }
-        property.setProperty('last_update', date.getTime());
       SpreadsheetApp.getActiveSpreadsheet().getSheetByName(this.cfg.bbCountSheetName).getRange("G1:G1").setValues([[new Date().toString()]]);
     },
 

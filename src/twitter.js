@@ -1,5 +1,23 @@
 //https://script.google.com/macros/d/1nA0fj4a8Fga-whToZEzeqOW0gwDvpSmhav66ZT1qUa37LvX6bLoSZTgW/usercallback
 
+function twitterAuthCallback(request) {
+    new TwitterService().twitterAuthCallback(request);
+}
+
+function twitterResetAuth() {
+    new TwitterService().reset();
+}
+
+function twitterProcessRetweets() {
+    var client = new TwitterClient(new TwitterService().getService(), getConfig());
+    client.processRetweets();
+}
+
+function twitterCountsPolling() {
+    var client = new TwitterClient(new TwitterService().getService(), getConfig());
+    client.pullCounts();
+}
+
 function TwitterClient(service, cfg) {
     this.cfg = cfg.twitter_config;
     this.service = service;
@@ -52,22 +70,26 @@ TwitterClient.prototype = {
     },
 
     processRetweets: function() {
+      if(this.cfg.retweetMonitoringSearch) {
         if (this.service.hasAccess()) {
             var tweets = this.searchForTweets(this.cfg.retweetMonitoringSearch);
             this.handleTweets(tweets, this, this.retweet);
         } else {
-          showAuthDialog(this.service.authorize());
+          _showAuthDialog(this.service.authorize());
         }
+      }
     },
 
     pullCounts: function() {
+      if(this.cfg.countsMonitoringSearch) {
         // TODO: Dry this
         if (this.service.hasAccess()) {
             var tweets = this.searchForTweets(this.cfg.countsMonitoringSearch);
             this.handleTweets(tweets, this, this.logTweet);
         } else {
-          showAuthDialog(this.service.authorize());
+          _showAuthDialog(this.service.authorize());
         }
+      }
     },
 
     logTweet: function(tweet, binding) {
@@ -155,23 +177,7 @@ TwitterService.prototype = {
     }
 };
 
-function twitterAuthCallback(request) {
-    new TwitterService().twitterAuthCallback(request);
-}
 
-function resetTwitter() {
-    new TwitterService().reset();
-}
-
-function processRetweets() {
-    var client = new TwitterClient(new TwitterService().getService(), getConfig());
-    client.processRetweets();
-}
-
-function pullCounts() {
-    var client = new TwitterClient(new TwitterService().getService(), getConfig());
-    client.pullCounts();
-}
 
 // this block is for when running in node outside of GAS
 if (typeof exports !== 'undefined') {

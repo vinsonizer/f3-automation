@@ -1,4 +1,4 @@
-function wrapHtml(body) {
+function _wrapHtml(body) {
   return "<html><head>" +
     "<link rel='stylesheet' href='//netdna.bootstrapcdn.com/bootstrap/3.0.1/css/bootstrap.min.css'></link>" +
     "<script type='javascript' href='https://code.jquery.com/jquery-3.0.0.min.js'></script>" +
@@ -7,9 +7,9 @@ function wrapHtml(body) {
     body + "</container></body></html>";
 }
 
-function showAuthDialog(authorizationUrl) {
+function _showAuthDialog(authorizationUrl) {
   var htmlOutput = HtmlService
-    .createHtmlOutput(wrapHtml('<p>Click <a href="' + authorizationUrl + '" target="_blank">Here</a> to Authorize</p>'))
+    .createHtmlOutput(_wrapHtml('<p>Click <a href="' + authorizationUrl + '" target="_blank">Here</a> to Authorize</p>'))
     .setWidth(250)
     .setHeight(300);
   SpreadsheetApp.getUi().showModalDialog(htmlOutput, "Authorization Required");

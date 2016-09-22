@@ -1,17 +1,17 @@
 function doGet(e) {
-  getTrelloNewsletterContent(e.parameters.nocache);
+  trelloGetNewsletterContent(e.parameters.nocache);
 }
 
-function showTrelloContent() {
-  var result = getTrelloNewsletterContent(true).setWidth(640).setHeight(500);
+function trelloShowContent() {
+  var result = trelloGetNewsletterContent(true).setWidth(640).setHeight(500);
   SpreadsheetApp.getUi().showModalDialog(result, "Newsletter Content");
 }
 
-function getTrelloNewsletterContent(skipCache) {
+function trelloGetNewsletterContent(skipCache) {
   return HtmlService.createHtmlOutput(new TrelloNewsletterContent(new TrelloService()).getNewsletterContent(skipCache));
 }
 
-function resetTrello() {
+function trelloResetAuth() {
     new TrelloService().reset();
 }
 
@@ -34,7 +34,7 @@ TrelloNewsletterContent.prototype = {
       var newListContent = this.getListContent(cfg.newContentList);
       var oldListContent = this.getListContent(cfg.oldContentList);
       var retiredListContent = this.getListContent(cfg.retiredContentList);
-      result = wrapHtml(newListContent + oldListContent + retiredListContent);
+      result = _wrapHtml(newListContent + oldListContent + retiredListContent);
       scriptCache.put("newsletter-content", result, 3600); // cache for 1 hour
       Logger.log("cache miss");
     } else {
@@ -130,7 +130,7 @@ TrelloService.prototype = {
       return result;
     } else {
       var authorizationUrl = service.authorize();
-      showAuthDialog(authorizationUrl);
+      _showAuthDialog(authorizationUrl);
     }
   }
 };
