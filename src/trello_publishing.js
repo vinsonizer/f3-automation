@@ -1,9 +1,22 @@
 function doGet(e) {
-  return HtmlService.createHtmlOutput(new TrelloNewsletterContent(new TrelloService()).getNewsletterContent(e.parameters.nocache));
+  trelloGetNewsletterContent(e.parameters.nocache);
+}
+
+function trelloShowContent() {
+  var result = trelloGetNewsletterContent(true).setWidth(640).setHeight(500);
+  SpreadsheetApp.getUi().showModalDialog(result, "Newsletter Content");
+}
+
+function trelloGetNewsletterContent(skipCache) {
+  return HtmlService.createHtmlOutput(new TrelloNewsletterContent(new TrelloService()).getNewsletterContent(skipCache));
+}
+
+function trelloResetAuth() {
+    new TrelloService().reset();
 }
 
 function trelloAuthCallback(request) {
-  new TrelloService().authCallback(request);
+  new TrelloService().trelloAuthCallback(request);
 }
 
 function TrelloNewsletterContent(service) {
@@ -17,26 +30,17 @@ TrelloNewsletterContent.prototype = {
     var scriptCache = CacheService.getScriptCache();
     var result = scriptCache.get("newsletter-content");
     if(skipCache ||  result === null) {
-      var cfg = config.trello_config;
+      var cfg = getConfig().trello_config;
       var newListContent = this.getListContent(cfg.newContentList);
       var oldListContent = this.getListContent(cfg.oldContentList);
       var retiredListContent = this.getListContent(cfg.retiredContentList);
-      result = this.wrapHtml(newListContent + oldListContent + retiredListContent);
+      result = _wrapHtml(newListContent + oldListContent + retiredListContent);
       scriptCache.put("newsletter-content", result, 3600); // cache for 1 hour
       Logger.log("cache miss");
     } else {
       Logger.log("cache hit");
     }
     return result;
-  },
-
-  wrapHtml: function(body) {
-    return "<html><head>" +
-      "<link rel='stylesheet' href='//netdna.bootstrapcdn.com/bootstrap/3.0.1/css/bootstrap.min.css'></link>" +
-      "<script type='javascript' href='https://code.jquery.com/jquery-3.0.0.min.js'></script>" +
-      "<meta name='viewport' content='width=device-width, initial-scale=1, user-scalable=no'></meta>" +
-      "<title>Newsletter Content</title></head><body><div class='container'>" +
-      body + "</container></body></html>";
   },
 
   getListContent: function(listName) {
@@ -57,7 +61,7 @@ TrelloNewsletterContent.prototype = {
   },
 
   getTargetListId: function(listName) {
-    var cfg = config.trello_config;
+    var cfg = getConfig().trello_config;
     var boards = this.service.get("members/me/boards?");
     var targetBoardId = (boards.filter(function(board, index) {
       return board.name == cfg.boardName;
@@ -88,7 +92,7 @@ TrelloService.prototype = {
    * Configures the service.
    */
   getService: function() {
-    var cfg = config.trello_config;
+    var cfg = getConfig().trello_config;
     return OAuth1.createService('Trello')
       // Set the endpoint URLs.
       .setRequestTokenUrl('https://trello.com/1/OAuthGetRequestToken')
@@ -106,7 +110,7 @@ TrelloService.prototype = {
   /**
    * Handles the OAuth callback.
    */
-  authCallback: function(request) {
+  trelloAuthCallback: function(request) {
     var service = this.getService();
     var authorized = service.handleCallback(request);
     if (authorized) {
@@ -126,8 +130,7 @@ TrelloService.prototype = {
       return result;
     } else {
       var authorizationUrl = service.authorize();
-      Logger.log('Open the following URL and re-run the script: %s',
-        authorizationUrl);
+      _showAuthDialog(authorizationUrl);
     }
   }
 };
