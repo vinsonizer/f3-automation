@@ -10,11 +10,11 @@
  * Main function that should be invoked by trigger
  */
 function checkBackblasts() {
-    new BackblastChecker(getConfig()).checkBackblasts();
+    new BackblastChecker().checkBackblasts();
 }
 
-function BackblastChecker(config) {
-  this.cfg = config.backblast_config;
+function BackblastChecker() {
+  this.cfg = getConfig().backblast_config;
 }
 
 BackblastChecker.prototype = {
@@ -31,7 +31,7 @@ BackblastChecker.prototype = {
         var countSheet = this.getCountsSheet();
         var attendSheet = this.getAttendanceSheet();
 
-        var property = PropertiesService.getScriptProperties();
+        var property = PropertiesService.getDocumentProperties();
         var last_update = property.getProperty('last_update');
         last_update = last_update === null ? 0 : parseFloat(last_update);
 

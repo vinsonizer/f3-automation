@@ -30,6 +30,15 @@ TwitterClient.prototype = {
         var rt_result = JSON.parse(rt_response.getContentText());
     },
 
+    getTweet: function(idString) {
+      var tweet_url = 'https://api.twitter.com/1.1/statuses/show/' + idString + '.json';
+      var tweet_response = this.service.fetch(tweet_url, {
+          method: 'get'
+      });
+      var resultTweet = JSON.parse(tweet_response.getContentText());
+      return resultTweet;
+    },
+
     handleTweets: function(tweets, binding, callback) {
         for (var i = tweets.length - 1; i >= 0; i--) {
             try {
@@ -47,9 +56,7 @@ TwitterClient.prototype = {
             var tweets = this.searchForTweets(this.cfg.retweetMonitoringSearch);
             this.handleTweets(tweets, this, this.retweet);
         } else {
-            var authorizationUrl = this.service.authorize();
-            Logger.log('Open the following URL and re-run the script: %s',
-                authorizationUrl);
+          showAuthDialog(this.service.authorize());
         }
     },
 
@@ -59,14 +66,15 @@ TwitterClient.prototype = {
             var tweets = this.searchForTweets(this.cfg.countsMonitoringSearch);
             this.handleTweets(tweets, this, this.logTweet);
         } else {
-            var authorizationUrl = this.service.authorize();
-            Logger.log('Open the following URL and re-run the script: %s',
-                authorizationUrl);
+          showAuthDialog(this.service.authorize());
         }
     },
 
     logTweet: function(tweet, binding) {
         var self = binding;
+        if(tweet.is_quote_status) {
+          tweet = self.getTweet(tweet.quoted_status_id_str);
+        }
         var getMatches = function(inputText, regex, position) {
             var matches = [];
             var match;
@@ -128,7 +136,7 @@ TwitterService.prototype = {
             .setConsumerSecret(cfg.consumerSecret)
             // Set the name of the callback function in the script referenced
             // above that should be invoked to complete the OAuth flow.
-            .setCallbackFunction('authCallback')
+            .setCallbackFunction('twitterAuthCallback')
             // Set the property store where authorized tokens should be persisted.
             .setPropertyStore(PropertiesService.getUserProperties());
     },
@@ -136,7 +144,7 @@ TwitterService.prototype = {
     /**
      * Handles the OAuth callback.
      */
-    authCallback: function(request) {
+    twitterAuthCallback: function(request) {
         var service = this.getService();
         var authorized = service.handleCallback(request);
         if (authorized) {
@@ -147,11 +155,11 @@ TwitterService.prototype = {
     }
 };
 
-function authCallback(request) {
-    new TwitterService().authCallback(request);
+function twitterAuthCallback(request) {
+    new TwitterService().twitterAuthCallback(request);
 }
 
-function reset() {
+function resetTwitter() {
     new TwitterService().reset();
 }
 

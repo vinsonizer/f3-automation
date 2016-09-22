@@ -1,8 +1,19 @@
+var SHEET_ID = "com.f3nation.automation.SHEET_ID";
+
+function init() {
+  var sheetId = SpreadsheetApp.getActiveSpreadsheet().getId();
+  PropertiesService.getScriptProperties().setProperty(SHEET_ID, sheetId);
+}
+
+function getSpreadsheet() {
+  return SpreadsheetApp.openById(PropertiesService.getScriptProperties().getProperty(SHEET_ID));
+}
+
 function getConfig() {
-  var settingsSheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName("Settings");
+  var settingsSheet = getSpreadsheet().getSheetByName("Settings");
   var bbRange = settingsSheet.getRange("B2:B5");
-  var twitterRange = settingsSheet.getRange("B7:B11");
-  var trelloRange = settingsSheet.getRange("B13:B20");
+  var twitterRange = settingsSheet.getRange("B7:B12");
+  var trelloRange = settingsSheet.getRange("B14:B21");
   var _getValue = function(range, offset) {
     return range.getCell(1+ offset, 1).getValue();
   };
@@ -13,6 +24,7 @@ function getConfig() {
       pageUrl: baseUrl + "page/",
       bbCountSheetName: _getValue(bbRange, 1),
       attendanceSheetName: _getValue(bbRange, 2),
+      updateFrequency: _getValue(bbRange, 3)
     },
     trello_config: {
       consumerKey: _getValue(trelloRange, 0),
@@ -29,7 +41,8 @@ function getConfig() {
       consumerKey: _getValue(twitterRange, 1),
       consumerSecret: _getValue(twitterRange, 2),
       retweetMonitoringSearch: _getValue(twitterRange, 3),
-      countsMonitoringSearch: _getValue(twitterRange, 4)
+      countsMonitoringSearch: _getValue(twitterRange, 4),
+      updateFrequency: _getValue(twitterRange, 5)
     }
   };
   return config;
