@@ -5,14 +5,6 @@ var TRELLO_CONSUMER_SECRET = "com.f3nation.automation.TWITTER_CONSUMER_SECRET";
 var TRELLO_CONSUMER_KEY = "com.f3nation.automation.TWITTER_CONSUMER_KEY";
 
 function _init() {
-<<<<<<< HEAD
-    var sheetId = SpreadsheetApp.getActiveSpreadsheet().getId();
-    PropertiesService.getScriptProperties().setProperty(SHEET_ID, sheetId);
-}
-
-function getSpreadsheet() {
-    return SpreadsheetApp.openById(PropertiesService.getScriptProperties().getProperty(SHEET_ID));
-=======
   var sheetId = SpreadsheetApp.getActiveSpreadsheet().getId();
   PropertiesService.getDocumentProperties().setProperty(SHEET_ID, sheetId);
 }
