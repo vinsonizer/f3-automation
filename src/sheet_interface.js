@@ -72,5 +72,4 @@ function scheduleTwitterPolling() {
       .everyMinutes(
           getConfig().twitter_config.updateFrequency
       ).create();
->>>>>>> 2f2374b264c264d196a9389c3362143c2afcd2f2
 }
