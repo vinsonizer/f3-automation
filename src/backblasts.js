@@ -26,6 +26,7 @@ BackblastChecker.prototype = {
      * Credit: https://gist.github.com/agektmr
      */
     checkBackblasts: function() {
+	var checkDate = new Date().toString();
 
         var url = this.cfg.feedUrl;
         var countSheet = this.getCountsSheet();
@@ -56,7 +57,7 @@ BackblastChecker.prototype = {
                 }
             }
         }
-      SpreadsheetApp.getActiveSpreadsheet().getSheetByName(this.cfg.bbCountSheetName).getRange("G1:G1").setValues([[new Date().toString()]]);
+        SpreadsheetApp.getActiveSpreadsheet().getSheetByName(this.cfg.bbCountSheetName).getRange("G1:G1").setValues([[checkDate]]);
     },
 
     /**

@@ -24,8 +24,8 @@ function getConfig() {
             updateFrequency: _getValue(bbRange, 3)
         },
         trello_config: {
-            consumerKey: _getOrReplace(trelloRange.getCell(1, 1), TRELLO_CONSUMER_KEY),
-            consumerSecret: _getOrReplace(trelloRange.getCell(2, 1), TRELLO_CONSUMER_SECRET),
+            consumerKey: _getValue(trelloRange, 0),
+            consumerSecret: _getValue(trelloRange, 1),
             boardName: _getValue(trelloRange, 2),
             inboxList: _getValue(trelloRange, 3),
             newContentList: _getValue(trelloRange, 4),
@@ -35,8 +35,8 @@ function getConfig() {
         },
         twitter_config: {
             tweetCountSheetName: _getValue(twitterRange, 0),
-            consumerKey: _getOrReplace(twitterRange.getCell(2, 1), TWITTER_CONSUMER_KEY),
-            consumerSecret: _getOrReplace(twitterRange.getCell(3, 1), TWITTER_CONSUMER_SECRET),
+            consumerKey: _getValue(twitterRange, 1),
+            consumerSecret: _getValue(twitterRange, 2),
             retweetMonitoringSearch: _getValue(twitterRange, 3),
             countsMonitoringSearch: _getValue(twitterRange, 4),
             updateFrequency: _getValue(twitterRange, 5)
