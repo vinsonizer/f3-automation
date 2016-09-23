@@ -40,9 +40,9 @@ TwitterClient.prototype = {
         return tweets;
     },
 
-    retweet: function(tweet) {
+    retweet: function(tweet, binding) {
         var rt_url = 'https://api.twitter.com/1.1/statuses/retweet/' + tweet.id_str + '.json';
-        var rt_response = this.service.fetch(rt_url, {
+        var rt_response = binding.service.fetch(rt_url, {
             method: 'post'
         });
         var rt_result = JSON.parse(rt_response.getContentText());
