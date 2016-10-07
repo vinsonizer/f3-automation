@@ -13,3 +13,8 @@ services.fetch = function(url, oauthservice, opts) {
 services.parse_xml = function(xml) {
   return XmlService.parse(xml);
 };
+
+// this block is for when running in node outside of GAS
+if (typeof exports !== 'undefined') {
+  exports.services = services;
+}
