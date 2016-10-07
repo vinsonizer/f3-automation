@@ -8,14 +8,14 @@ describe('Backblasts Additional Data', function() {
       var content = "<li><strong>When:</strong>01/01/2016</li>";
       var result = bb.getAdditionalData(content, []);
 
-        assert(result.date === "01/01/2016", "Should parse out date");
+      assert(result.date === "01/01/2016", "Should parse out date");
     });
 
     it('should parse out todays date if workout date not found', function() {
       var content = "<li><strong></li>";
       var result = bb.getAdditionalData(content, []);
-        var date = new Date(result.date);
-        var today = new Date();
+      var date = new Date(result.date);
+      var today = new Date();
 
       assert(date.toLocaleDateString() == today.toLocaleDateString(), "Should be equal to today");
     });
@@ -26,10 +26,10 @@ describe('Backblasts Additional Data', function() {
       assert(result.paxList.indexOf("wingman") != -1, "Should parse out pax list");
     });
 
-    it('should parse out pax count', function(){
-        var content = "The PAX:</strong> The Once-ler, Waterfoot, Vida, Chin Music, Crayola, Bullwinkle (FNG), Hannibal, Knight Rider, MAD, Pele, Adobe, Smash, Balk, Fireman Ed, Marge, Lambeau, Torpedo, Goonie (QIC) </li>";
-        var result = bb.getAdditionalData(content,[]);
-        assert(result.paxList.length === 18, "Should find the number of Pax");
+    it('should parse out pax count', function() {
+      var content = "The PAX:</strong> The Once-ler, Waterfoot, Vida, Chin Music, Crayola, Bullwinkle (FNG), Hannibal, Knight Rider, MAD, Pele, Adobe, Smash, Balk, Fireman Ed, Marge, Lambeau, Torpedo, Goonie (QIC) </li>";
+      var result = bb.getAdditionalData(content, []);
+      assert(result.paxList.length === 18, "Should find the number of Pax");
     });
     it('should parse out QIC', function() {
       var content = "<li><strong>QIC:</strong>Gears</li>";
