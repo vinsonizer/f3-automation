@@ -5,23 +5,6 @@ var bb = require("../src/backblasts.js").backblasts;
 // Global Scope = :(
 services = require("../src/services.js").services;
 
-
-function mockDocument() {
-  return {
-    getRootElement: function() {
-      return {
-        getChild: function() {
-          return {
-            getChildren: function() {
-              return {};
-            }
-          };
-        }
-      };
-    }
-  };
-}
-
 describe('Backblasts Data', function() {
   var cfg = {};
   describe('checkForUpdates', function() {
@@ -35,15 +18,19 @@ describe('Backblasts Data', function() {
         getRootElement: function() {
           return {
             getChild: function() {
-              console.log("called getChild");
               return {
-                getChildren: sinon.stub()
+                getChildren: function() {
+                  return {};
+                }
               };
             }
           };
         }
       };
-      doc.getRootElement().getChild().getChildren.returns([{}]);
+      var childrenStub = sinon.stub(doc.getRootElement.getChild, 'getChildren');
+      childrenStub.returns("hi");
+
+      console.log("getChildren: " + doc.getRootElement().getChild().getChildren());
       parse_xml.returns(doc);
 
       var result = bb.checkForUpdates(
