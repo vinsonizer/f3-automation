@@ -68,6 +68,7 @@ backblasts.checkForUpdates = function(cfg, dateGetter, dateSetter, countRowCallb
 
   var feed = services.fetch(url);
   var items = getItems(feed);
+  console.log(items); //TODO: remove debugging
   var i = items.length - 1;
   var date = new Date();
 
