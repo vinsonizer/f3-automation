@@ -1,4 +1,3 @@
-
 var shell = require('gulp-shell');
 var mocha = require('gulp-mocha');
 var watch = require('gulp-watch');
@@ -11,21 +10,23 @@ var cfgRoot = './cfg/';
 var tstRoot = './test/';
 var buildDir = './build/';
 
-gulp.task('lint', function(){
-    return gulp.src([
-        srcRoot + '*.js', 
-        cfgRoot + '*.js'])
-        .pipe(jshint())
-        .pipe(jshint.reporter('jshint-stylish'))
-        //.pipe(jshint.reporter('fail')); //there is an issue with this reporter: skipping
+gulp.task('lint', function() {
+  return gulp.src([
+      srcRoot + '*.js',
+      cfgRoot + '*.js'
+    ])
+    .pipe(jshint())
+    .pipe(jshint.reporter('jshint-stylish'));
+  //.pipe(jshint.reporter('fail')); //there is an issue with this reporter: skipping
 });
 
-gulp.task('build', function(){
-    return gulp.src([
-        srcRoot + '*.js', 
-        cfgRoot + '*.js'])
-    
-    .pipe(gulp.dest(buildDir));
+gulp.task('build', function() {
+  return gulp.src([
+    srcRoot + '*.js',
+    cfgRoot + '*.js'
+  ])
+
+  .pipe(gulp.dest(buildDir));
 });
 
 gulp.task('test', function() {
