@@ -59,3 +59,7 @@ gulp.task('watch', function() {
 });
 
 gulp.task('default', ['cleanup', 'lint', 'build', 'test', 'upload']);
+
+gulp.task('watch', function() {
+  gulp.watch(['src/*.js', 'test/*.js'], ['cleanup', 'lint', 'build', 'test']);
+});
