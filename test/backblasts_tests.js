@@ -5,6 +5,12 @@ var bb = require("../src/backblasts.js").backblasts;
 // Global Scope = :(
 services = require("../src/services.js").services;
 
+var WHEN = "<li><strong>When:</strong>01/01/2016</li>";
+var QIC = "<li><strong>QIC:</strong>Wingman</li>";
+var PAX = "<li><strong>The PAX:</strong> The Once-ler, Waterfoot, Vida, Chin Music, Crayola, Bullwinkle (FNG), Hannibal, Knight Rider, MAD, Pele, Adobe, Smash, Balk, Fireman Ed, Marge, Lambeau, Torpedo, Goonie (QIC) </li>";
+
+var UPDATE_DATE = new Date().toString();
+
 describe('Backblasts Data', function() {
 
   var mockDoc = function() {
@@ -15,12 +21,20 @@ describe('Backblasts Data', function() {
     };
 
     var itemMock = {
-      getChildText: function() {}
+      getChildText: function() {},
+      getChildren: function() {}
     };
 
     sinon.stub(docMock, 'getRootElement').returns(docMock);
     sinon.stub(docMock, 'getChild').withArgs('channel').returns(docMock);
     sinon.stub(docMock, 'getChildren').withArgs('item').returns([itemMock]);
+
+    var childText = sinon.stub(itemMock, 'getChildText');
+    childText.withArgs('link').returns("http://testurl.com");
+    childText.withArgs('pubDate').returns(UPDATE_DATE);
+
+    sinon.stub(itemMock, 'getChildren').withArgs('category').returns(['category1', 'category2']);
+
     return docMock;
   };
 
@@ -30,25 +44,30 @@ describe('Backblasts Data', function() {
     it('should parse out workout dates', function() {
 
       var fetch = sinon.stub(services, 'fetch');
-      fetch.returns("<li><strong>When:</strong>01/01/2016</li>" +
-        "<li><strong>The PAX:</strong>Wingman</li>" +
-        "<li>The PAX:</strong> The Once-ler, Waterfoot, Vida, Chin Music, Crayola, Bullwinkle (FNG), Hannibal, Knight Rider, MAD, Pele, Adobe, Smash, Balk, Fireman Ed, Marge, Lambeau, Torpedo, Goonie (QIC) </li>");
+      fetch.returns(WHEN + QIC + PAX);
 
       var docMock = mockDoc();
       sinon.stub(services, 'parse_xml').returns(docMock);
 
       var result = bb.checkForUpdates(
         cfg,
+        // last update date
         function() {
-          return new Date().toString();
+          var yesterday = new Date().getDate() - 1;
+          return yesterday.toString();
         },
+        // latest update date
         function(newDate) {
           // check date here
+          assert(newDate === UPDATE_DATE, 'Should record the new date');
         },
+        // row values
         function(rowValues) {
-          console.log("rowValues: " + rowValues);
-          //          assert(result.date === "01/01/2016", "Should parse out date");
           // check Row Values here
+          assert(rowValues[0] === "01/01/2016", "Should parse out date");
+          assert(rowValues[1] === "category1,category2", "Should parse out categories");
+          assert(rowValues[2] === 19, "Should parse out pax count");
+          assert(rowValues[3] === "http://testurl.com", "Should parse out bb url");
         });
     });
     /*

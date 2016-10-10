@@ -36,7 +36,7 @@ backblasts.checkForUpdates = function(cfg, dateGetter, dateSetter, countRowCallb
     var whenMatch = whenRegex.exec(body) && whenRegex.exec(body).length > 0 ? whenRegex.exec(body)[1].trim() : '';
     if (paxMatch) {
       // in case we ever want to capture the actual pax list
-      paxList = paxMatch[1].split(",").map(this.clean);
+      paxList = paxMatch[1].split(",").map(clean);
       paxCount = paxList.length;
     }
     if (qicMatch) {
