@@ -8,7 +8,7 @@
 
 var backblasts = {};
 
-backblasts.checkForUpdates = function(cfg, dateGetter, dateSetter, countRowCallback) {
+backblasts.checkForUpdates = function(cfg, dateGetter, dateSetter, countRowCallback, attendanceCallback) {
 
   var getItems = function(feed) {
     var doc = services.parse_xml(feed);
@@ -51,7 +51,8 @@ backblasts.checkForUpdates = function(cfg, dateGetter, dateSetter, countRowCallb
         }
       }
     }
-    when = whenMatch || new Date();
+    var dt = new Date();
+    when = whenMatch || (dt.getMonth() + 1) + "/" + dt.getDate() + "/" + dt.getYear();
 
     return {
       date: when,
@@ -64,7 +65,8 @@ backblasts.checkForUpdates = function(cfg, dateGetter, dateSetter, countRowCallb
 
   var check_date = new Date().toString();
   var url = cfg.feedUrl;
-  var last_update = new Date(dateGetter()).getTime();
+  var yesterday = new Date().getDate() - 1;
+  var last_update = new Date(dateGetter()).getTime() || yesterday;
 
   var feed = services.fetch(url);
   var items = getItems(feed);
@@ -86,11 +88,9 @@ backblasts.checkForUpdates = function(cfg, dateGetter, dateSetter, countRowCallb
         additional.paxCount,
         bbLink
       ]);
-      /*
-      for (var j = 0; j < additional.paxList.length; j++) {
-        this.insertOrUpdateAttendance(additional.paxList[j], additional.date, bbLink, attendSheet);
+      if (attendanceCallback) {
+        attendanceCallback([additional.date, bbLink, additional.paxList]);
       }
-      */
     }
   }
   dateSetter(check_date);
