@@ -6,32 +6,36 @@ var bb = require("../src/backblasts.js").backblasts;
 services = require("../src/services.js").services;
 
 describe('Backblasts Data', function() {
+
+  var mockDoc = function() {
+    var docMock = {
+      getRootElement: function() {},
+      getChild: function() {},
+      getChildren: function() {}
+    };
+
+    var itemMock = {
+      getChildText: function() {}
+    };
+
+    sinon.stub(docMock, 'getRootElement').returns(docMock);
+    sinon.stub(docMock, 'getChild').withArgs('channel').returns(docMock);
+    sinon.stub(docMock, 'getChildren').withArgs('item').returns([itemMock]);
+    return docMock;
+  };
+
   var cfg = {};
+
   describe('checkForUpdates', function() {
     it('should parse out workout dates', function() {
 
       var fetch = sinon.stub(services, 'fetch');
-      fetch.returns("<li><strong>When:</strong>01/01/2016</li>");
+      fetch.returns("<li><strong>When:</strong>01/01/2016</li>" +
+        "<li><strong>The PAX:</strong>Wingman</li>" +
+        "<li>The PAX:</strong> The Once-ler, Waterfoot, Vida, Chin Music, Crayola, Bullwinkle (FNG), Hannibal, Knight Rider, MAD, Pele, Adobe, Smash, Balk, Fireman Ed, Marge, Lambeau, Torpedo, Goonie (QIC) </li>");
 
-      var parse_xml = sinon.stub(services, 'parse_xml');
-      var doc = {
-        getRootElement: function() {
-          return {
-            getChild: function() {
-              return {
-                getChildren: function() {
-                  return {};
-                }
-              };
-            }
-          };
-        }
-      };
-      var childrenStub = sinon.stub(doc.getRootElement.getChild, 'getChildren');
-      childrenStub.returns("hi");
-
-      console.log("getChildren: " + doc.getRootElement().getChild().getChildren());
-      parse_xml.returns(doc);
+      var docMock = mockDoc();
+      sinon.stub(services, 'parse_xml').returns(docMock);
 
       var result = bb.checkForUpdates(
         cfg,
@@ -42,9 +46,10 @@ describe('Backblasts Data', function() {
           // check date here
         },
         function(rowValues) {
+          console.log("rowValues: " + rowValues);
+          //          assert(result.date === "01/01/2016", "Should parse out date");
           // check Row Values here
         });
-      assert(result.date === "01/01/2016", "Should parse out date");
     });
     /*
                 it('should parse out todays date if workout date not found', function() {
