@@ -62,3 +62,7 @@ function backblastsCheckForUpdates() {
     }
   );
 }
+
+function twitterAuthCallback(request) {
+  services.oauth_callback_handler(twitter.get_service, request);
+}

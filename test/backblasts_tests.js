@@ -12,8 +12,7 @@ var PAX = "<li><strong>The PAX:</strong>Wingman,  Gears, Old Bay, Bing</li>";
 var UPDATE_DATE = new Date().toString();
 
 describe('Backblasts Data', function() {
-  var fetch_stub = sinon.stub(services, 'fetch');
-  var parse_xml_stub = sinon.stub(services, 'parse_xml');
+
 
   var mockDoc = function() {
     var docMock = {
@@ -37,16 +36,25 @@ describe('Backblasts Data', function() {
     return docMock;
   };
 
+  beforeEach(function() {
+    sinon.stub(services, 'fetch');
+    sinon.stub(services, 'parse_xml');
+
+    var docMock = mockDoc();
+    services.parse_xml.returns(docMock);
+  });
+
+  afterEach(function() {
+    services.fetch.restore();
+    services.parse_xml.restore();
+  });
+
   var cfg = {};
 
   describe('checkForUpdates', function() {
     it('should parse out workout dates', function() {
 
-      fetch_stub.returns(WHEN + QIC + PAX);
-
-      var docMock = mockDoc();
-      parse_xml_stub.returns(docMock);
-
+      services.fetch.returns(WHEN + QIC + PAX);
       var result = bb.checkForUpdates(
         cfg,
         function() {},
@@ -57,10 +65,7 @@ describe('Backblasts Data', function() {
     });
     it('should parse out todays date if workout date not found', function() {
 
-      fetch_stub.returns(QIC + PAX);
-
-      var docMock = mockDoc();
-      parse_xml_stub.returns(docMock);
+      services.fetch.returns(QIC + PAX);
       var result = bb.checkForUpdates(
         cfg,
         function() {},
@@ -73,10 +78,7 @@ describe('Backblasts Data', function() {
     });
 
     it('should parse out pax count and list', function() {
-      fetch_stub.returns(PAX);
-
-      var docMock = mockDoc();
-      parse_xml_stub.returns(docMock);
+      services.fetch.returns(PAX);
       var result = bb.checkForUpdates(
         cfg,
         function() {},
@@ -87,7 +89,7 @@ describe('Backblasts Data', function() {
     });
     it('should parse out pax count', function() {
       var content = "The PAX:</strong> The Once-ler, Waterfoot, Vida, Chin Music, Crayola, Bullwinkle (FNG), Hannibal, Knight Rider, MAD, Pele, Adobe, Smash, Balk, Fireman Ed, Marge, Lambeau, Torpedo, Goonie (QIC) </li>";
-      fetch_stub.returns(content);
+      services.fetch.returns(content);
       var result = bb.checkForUpdates(
         cfg,
         function() {},
@@ -98,7 +100,7 @@ describe('Backblasts Data', function() {
     });
     it('should parse out QIC', function() {
       var content = "<li><strong>QIC:</strong>Gears</li>";
-      fetch_stub.returns(content);
+      services.fetch.returns(content);
       var result = bb.checkForUpdates(
         cfg,
         function() {},
@@ -110,7 +112,7 @@ describe('Backblasts Data', function() {
     it('should handle QIC in pax list and QIC field', function() {
       var content = "<li><strong>QIC:</strong>Gears</li>" +
         "<li><strong>The PAX:</strong>Wingman,  Gears</li>";
-      fetch_stub.returns(content);
+      services.fetch.returns(content);
       var result = bb.checkForUpdates(
         cfg,
         function() {},
@@ -123,7 +125,7 @@ describe('Backblasts Data', function() {
     it('should handle multiple in QIC field with and', function() {
       var content = "<li><strong>QIC:</strong>Gears and Old Bay</li>" +
         "<li><strong>The PAX:</strong>Wingman,  Gears, Old Bay</li>";
-      fetch_stub.returns(content);
+      services.fetch.returns(content);
       var result = bb.checkForUpdates(
         cfg,
         function() {},
@@ -135,7 +137,7 @@ describe('Backblasts Data', function() {
     it('should handle multiple in QIC field with commas', function() {
       var content = "<li><strong>QIC:</strong>Zima, Bolt, Bing</li>" +
         "<li><strong>The PAX:</strong>Wingman,  Gears, Old Bay</li>";
-      fetch_stub.returns(content);
+      services.fetch.returns(content);
       var result = bb.checkForUpdates(
         cfg,
         function() {},
@@ -147,7 +149,7 @@ describe('Backblasts Data', function() {
     it('should handle handle common acronyms', function() {
       var content = "<li><strong>QIC:</strong>Gears(YHC)</li>" +
         "<li><strong>The PAX:</strong>Wingman (Respect), Bolt(QIC), Sharkbait (2.0)</li>";
-      fetch_stub.returns(content);
+      services.fetch.returns(content);
       var result = bb.checkForUpdates(
         cfg,
         function() {},
