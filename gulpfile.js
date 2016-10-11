@@ -35,6 +35,13 @@ gulp.task('test', function() {
   return gulp.src(tstRoot + '*.js', {
       read: false
     })
+    .pipe(mocha())
+});
+
+gulp.task('coverage', function() {
+  return gulp.src(tstRoot + '*.js', {
+      read: false
+    })
     .pipe(cover.instrument({
       pattern: [srcRoot + '*.js'],
       debugDirectory: 'debug'
@@ -54,15 +61,6 @@ gulp.task('cleanup', function() {
   return cleanDest(buildDir);
 });
 
-gulp.task('watch', function() {
-  return gulp.src([srcRoot + '*.js', cfgRoot + '*.js'])
-    .pipe(watch([srcRoot + '*.js', cfgRoot + '*.js']))
-    .pipe(jshint())
-    .pipe(jshint.reporter('default'))
-    .pipe(cleanDest(buildDir))
-    .pipe(gulp.dest(buildDir))
-    .pipe(gulp.task('upload'));
-});
 
 gulp.task('default', ['cleanup', 'lint', 'build', 'test', 'upload']);
 
