@@ -1,6 +1,7 @@
 var shell = require('gulp-shell');
 var mocha = require('gulp-mocha');
 var watch = require('gulp-watch');
+var cover = require('gulp-coverage');
 var jshint = require('gulp-jshint');
 var cleanDest = require('gulp-clean-dest');
 var gulp = require('gulp');
@@ -29,14 +30,19 @@ gulp.task('build', function() {
   .pipe(gulp.dest(buildDir));
 });
 
+
 gulp.task('test', function() {
   return gulp.src(tstRoot + '*.js', {
       read: false
     })
-    // gulp-mocha needs filepaths so you can't have any plugins before it
-    .pipe(mocha({
-      reporter: 'nyan'
-    }));
+    .pipe(cover.instrument({
+      pattern: [srcRoot + '*.js'],
+      debugDirectory: 'debug'
+    }))
+    .pipe(mocha())
+    .pipe(cover.gather())
+    .pipe(cover.format())
+    .pipe(gulp.dest('reports'));
 });
 
 gulp.task('upload',

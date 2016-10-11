@@ -21,3 +21,8 @@ build
 
 # config files (keep defaults in SCM)
 client_secret*
+
+# coverage artifacts
+debug
+reports
+.cover*
