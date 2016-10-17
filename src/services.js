@@ -49,6 +49,14 @@ services.oauth_reset = function(serviceCallback) {
   service.reset();
 };
 
+services.show_auth_dialog = function(authorizationUrl) {
+  var htmlOutput = HtmlService
+    .createHtmlOutput(_wrapHtml('<p>Click <a href="' + authorizationUrl + '" target="_blank">Here</a> to Authorize</p>'))
+    .setWidth(250)
+    .setHeight(300);
+  SpreadsheetApp.getUi().showModalDialog(htmlOutput, "Authorization Required");
+};
+
 services.log = function(message) {
   Logger.log(message);
 };

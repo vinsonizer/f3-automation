@@ -6,11 +6,3 @@ function _wrapHtml(body) {
     "<title>Newsletter Content</title></head><body><div class='container'>" +
     body + "</container></body></html>";
 }
-
-function _showAuthDialog(authorizationUrl) {
-  var htmlOutput = HtmlService
-    .createHtmlOutput(_wrapHtml('<p>Click <a href="' + authorizationUrl + '" target="_blank">Here</a> to Authorize</p>'))
-    .setWidth(250)
-    .setHeight(300);
-  SpreadsheetApp.getUi().showModalDialog(htmlOutput, "Authorization Required");
-}
