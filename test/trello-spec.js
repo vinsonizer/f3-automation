@@ -25,7 +25,12 @@ describe('Trello Client', function() {
         consumerSecret: "123"
       }
     });
-    sandbox.stub(services, 'createOauthService').yields(null, fetchStub);
+    var fakeService = {
+      hasAccess: function() {
+        return true;
+      }
+    };
+    sandbox.stub(services, 'createOauthService').yields(null, fakeService);
   });
 
   afterEach(function() {
@@ -82,9 +87,12 @@ describe('Trello Client', function() {
 
     trello.getNewsletterContent(function(err, content) {
       assert.equal(content.length, 3, "should have 3 lists of cards");
-      assert.equal(content[0][0].id, testListId1, "first card list should match first list id");
-      assert.equal(content[1][0].id, testListId2, "second card list should match second list id");
-      assert.equal(content[2][0].id, testListId3, "third card list should match third list id");
+      assert.equal(content[0].listName, cfg.newContentList, "first card list should match first list name");
+      assert.equal(content[1].listName, cfg.oldContentList, "second card list should match second list name");
+      assert.equal(content[2].listName, cfg.retiredContentList, "third card list should match third list name");
+      assert.equal(content[0].cards[0].id, testListId1, "first card list should match first list id");
+      assert.equal(content[1].cards[0].id, testListId2, "second card list should match second list id");
+      assert.equal(content[2].cards[0].id, testListId3, "third card list should match third list id");
       done();
     });
   });
@@ -110,10 +118,10 @@ describe('Trello Client', function() {
 
     trello.getNewsletterContent(function(err, content) {
       assert.equal(content.length, 3, "should have 3 lists of cards");
-      assert.equal(content[0][0].id, testListId1, "first card list should match first list id");
-      assert.isArray(content[1], "second card list should be array");
-      assert.lengthOf(content[1], 0, "second card list should be empty");
-      assert.equal(content[2][0].id, testListId3, "third card list should match third list id");
+      assert.equal(content[0].cards[0].id, testListId1, "first card list should match first list id");
+      assert.isArray(content[1].cards, "second card list should be array");
+      assert.lengthOf(content[1].cards, 0, "second card list should be empty");
+      assert.equal(content[2].cards[0].id, testListId3, "third card list should match third list id");
       done();
     });
   });

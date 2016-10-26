@@ -28,15 +28,17 @@ describe('Backblast Client', function() {
       getRootElement: function() {},
       getChild: function() {},
       getChildText: function() {},
-      getChildren: function() {}
+      getChildren: function() {},
+      getText: function() {},
     };
 
     sinon.stub(docMock, 'getRootElement').returns(docMock);
     sinon.stub(docMock, 'getChild').withArgs('channel').returns(docMock);
+    sinon.stub(docMock, 'getText').returns("hi");
 
     var getChildren = sinon.stub(docMock, 'getChildren');
     getChildren.withArgs('item').returns([docMock]);
-    getChildren.withArgs('category').returns(['category1', 'category2']);
+    getChildren.withArgs('category').returns([docMock]);
 
     var childText = sinon.stub(docMock, 'getChildText');
     childText.withArgs('link').returns("http://testurl.com");
@@ -54,8 +56,10 @@ describe('Backblast Client', function() {
 
     services.fetch.returns(WHEN + QIC + PAX);
     var result = bb.checkForUpdates(
-      function(updates) {
-        assert.equal(updates[0].workoutDate, "01/01/2016", "Should parse out date");
+      function(err, updates) {
+        assert.equal(updates[0].workoutDate.getMonth(), new Date("01/01/2016").getMonth(), "Should parse out month");
+        assert.equal(updates[0].workoutDate.getDay(), new Date("01/01/2016").getDay(), "Should parse out day");
+        assert.equal(updates[0].workoutDate.getYear(), new Date("01/01/2016").getYear(), "Should parse out year");
         done();
       });
   });
@@ -63,9 +67,11 @@ describe('Backblast Client', function() {
 
     services.fetch.returns(QIC + PAX);
     var result = bb.checkForUpdates(
-      function(updates) {
+      function(err, updates) {
         var dt = new Date();
-        assert.equal(updates[0].workoutDate, (dt.getMonth() + 1) + "/" + dt.getDate() + "/" + dt.getYear(), "Should set missing date to today");
+        assert.equal(updates[0].workoutDate.getMonth(), new Date().getMonth(), "Should parse out month");
+        assert.equal(updates[0].workoutDate.getDay(), new Date().getDay(), "Should parse out day");
+        assert.equal(updates[0].workoutDate.getYear(), new Date().getYear(), "Should parse out year");
         done();
       });
 
@@ -74,7 +80,7 @@ describe('Backblast Client', function() {
   it('should parse out pax count and list', function(done) {
     services.fetch.returns(PAX);
     var result = bb.checkForUpdates(
-      function(updates) {
+      function(err, updates) {
         assert.equal(updates[0].paxList.length, 4, "Should parse out pax count");
         done();
       });
@@ -83,7 +89,7 @@ describe('Backblast Client', function() {
     var content = "The PAX:</strong> The Once-ler, Waterfoot, Vida, Chin Music, Crayola, Bullwinkle (FNG), Hannibal, Knight Rider, MAD, Pele, Adobe, Smash, Balk, Fireman Ed, Marge, Lambeau, Torpedo, Goonie (QIC) </li>";
     services.fetch.returns(content);
     var result = bb.checkForUpdates(
-      function(updates) {
+      function(err, updates) {
         assert.equal(updates[0].paxList.length, 18, "Should parse out pax count");
         done();
       });
@@ -93,7 +99,7 @@ describe('Backblast Client', function() {
       "<li><strong>The PAX:</strong>Wingman,  Gears</li>";
     services.fetch.returns(content);
     var result = bb.checkForUpdates(
-      function(updates) {
+      function(err, updates) {
         assert.equal(updates[0].paxList.length, 2, "Should parse out pax count and remove dupes from QIC");
         done();
       });
@@ -104,7 +110,7 @@ describe('Backblast Client', function() {
       "<li><strong>The PAX:</strong>Wingman,  Gears, Old Bay</li>";
     services.fetch.returns(content);
     var result = bb.checkForUpdates(
-      function(updates) {
+      function(err, updates) {
         assert.equal(updates[0].paxList.length, 3, "Should handle multiple QIC and parse out 'and'");
         done();
       });
@@ -114,7 +120,7 @@ describe('Backblast Client', function() {
       "<li><strong>The PAX:</strong>Wingman,  Gears, Old Bay</li>";
     services.fetch.returns(content);
     var result = bb.checkForUpdates(
-      function(updates) {
+      function(err, updates) {
         assert.equal(updates[0].paxList.length, 6, "Should handle multiple QIC and parse out 'commas'");
         done();
       });
@@ -124,7 +130,7 @@ describe('Backblast Client', function() {
       "<li><strong>The PAX:</strong>Wingman (Respect), Bolt(QIC), Sharkbait (2.0)</li>";
     services.fetch.returns(content);
     var result = bb.checkForUpdates(
-      function(updates) {
+      function(err, updates) {
         var paxList = updates[0].paxList;
         assert(paxList.indexOf("bolt") != -1, "Should contain bolt");
         assert(paxList.indexOf("wingman") != -1, "Should contain wingman");
