@@ -20,7 +20,12 @@ describe('Twitter Client', function() {
         consumerSecret: "123"
       }
     });
-    sandbox.stub(services, 'createOauthService').yields(null, fetchStub);
+    var fakeService = {
+      hasAccess: function() {
+        return true;
+      }
+    };
+    sandbox.stub(services, 'createOauthService').yields(null, fakeService);
   });
 
   afterEach(function() {
