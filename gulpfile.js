@@ -1,41 +1,41 @@
-
 var shell = require('gulp-shell');
 var mocha = require('gulp-mocha');
 var watch = require('gulp-watch');
+var cover = require('gulp-coverage');
 var jshint = require('gulp-jshint');
-var cleanDest = require('gulp-clean-dest');
 var gulp = require('gulp');
 
-var srcRoot = './src/';
-var cfgRoot = './cfg/';
+var srcRoot = './lib/';
 var tstRoot = './test/';
-var buildDir = './build/';
 
-gulp.task('lint', function(){
-    return gulp.src([
-        srcRoot + '*.js', 
-        cfgRoot + '*.js'])
-        .pipe(jshint())
-        .pipe(jshint.reporter('jshint-stylish'))
-        //.pipe(jshint.reporter('fail')); //there is an issue with this reporter: skipping
-});
-
-gulp.task('build', function(){
-    return gulp.src([
-        srcRoot + '*.js', 
-        cfgRoot + '*.js'])
-    
-    .pipe(gulp.dest(buildDir));
+gulp.task('lint', function() {
+  return gulp.src([
+      srcRoot + '*.js'
+    ])
+    .pipe(jshint())
+    .pipe(jshint.reporter('jshint-stylish'));
+  //.pipe(jshint.reporter('fail')); //there is an issue with this reporter: skipping
 });
 
 gulp.task('test', function() {
   return gulp.src(tstRoot + '*.js', {
       read: false
     })
-    // gulp-mocha needs filepaths so you can't have any plugins before it
-    .pipe(mocha({
-      reporter: 'nyan'
-    }));
+    .pipe(mocha());
+});
+
+gulp.task('coverage', function() {
+  return gulp.src(tstRoot + '*.js', {
+      read: false
+    })
+    .pipe(cover.instrument({
+      pattern: [srcRoot + '*.js'],
+      debugDirectory: 'debug'
+    }))
+    .pipe(mocha())
+    .pipe(cover.gather())
+    .pipe(cover.format())
+    .pipe(gulp.dest('reports'));
 });
 
 gulp.task('upload',
@@ -43,18 +43,8 @@ gulp.task('upload',
     cwd: '.'
   }));
 
-gulp.task('cleanup', function() {
-  return cleanDest(buildDir);
-});
+gulp.task('default', ['lint', 'test', 'upload']);
 
 gulp.task('watch', function() {
-  return gulp.src([srcRoot + '*.js', cfgRoot + '*.js'])
-    .pipe(watch([srcRoot + '*.js', cfgRoot + '*.js']))
-    .pipe(jshint())
-    .pipe(jshint.reporter('default'))
-    .pipe(cleanDest(buildDir))
-    .pipe(gulp.dest(buildDir))
-    .pipe(gulp.task('upload'));
+  gulp.watch([srcRoot + '*.js', tstRoot + '*.js'], ['lint', 'test']);
 });
-
-gulp.task('default', ['cleanup', 'lint', 'build', 'test', 'upload']);
