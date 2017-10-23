@@ -28,6 +28,8 @@ describe('Backblast Client', function () {
       getChildText: function () {},
       getChildren: function () {},
       getText: function () {},
+      getAttribute: function() {},
+      getValue: function(){}
     };
 
     sinon.stub(docMock, 'getRootElement').returns(docMock);
@@ -41,6 +43,9 @@ describe('Backblast Client', function () {
     var childText = sinon.stub(docMock, 'getChildText');
     childText.withArgs('link').returns("http://testurl.com");
     childText.withArgs('pubDate').returns(UPDATE_DATE);
+
+    var getAttribute = sinon.stub(docMock, 'getAttribute');
+    getAttribute.withArgs('domain').returns(docMock);
 
     parseXmlStub.returns(docMock);
 
