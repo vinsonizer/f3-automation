@@ -1,10 +1,13 @@
 /* global describe, beforeEach, afterEach, it */
-var assert = require('chai').assert
-var sinon = require('sinon')
+const assert = require('chai').assert
+const sinon = require('sinon')
+const fs = require('fs')
 
-var config = require('../lib/config')
-var wp = require('../lib/worshipplanning')
-var services = require('../lib/services')
+const config = require('../lib/config')
+const wp = require('../lib/worshipplanning')
+const services = require('../lib/services')
+
+var testEvents = JSON.parse(fs.readFileSync('test/data/worshipplanning.json', 'utf-8'))
 
 describe('Worshipplanning Client', function () {
   var sandbox
@@ -34,12 +37,36 @@ describe('Worshipplanning Client', function () {
 
   it('Should be able to login', function (done) {
     var testToken = 'ABC123'
-    fetchStub.onFirstCall().returns(JSON.stringify({ token: testToken }))
-    wp.login(function (err, result) {
+    fetchStub.onFirstCall().returns(JSON.stringify(testEvents.login))
+    wp.login(function (err, token) {
       if (err) throw err
       else {
-        assert.isOk(result.token, 'should have a token')
-        assert.equal(result.token, testToken, 'token should match')
+        assert.isOk(token, 'should have a token')
+        assert.equal(token, testToken, 'token should match')
+        done()
+      }
+    })
+  })
+
+  it('Should be able to fetch events', function (done) {
+    fetchStub.onFirstCall().returns(JSON.stringify(testEvents.getEvents))
+    wp.getEvents('ABC123', function (err, result) {
+      if (err) throw err
+      else {
+        assert.isOk(result, 'should have results')
+        assert.equal(result.length, 10, 'should be 10 results')
+        done()
+      }
+    })
+  })
+
+  it('Should be able to fetch event assignements', function (done) {
+    fetchStub.onFirstCall().returns(JSON.stringify(testEvents.getEventAssignments))
+    wp.getEventAssignments('ABC123', { id: 12345 }, function (err, result) {
+      if (err) throw err
+      else {
+        assert.isOk(result, 'should have results')
+        assert.equal(result.length, 2, 'should be 2 results')
         done()
       }
     })
