@@ -1,6 +1,7 @@
-const { watch, series, src, dest } = require('gulp')
+const { series, src, dest } = require('gulp')
 const mocha = require('gulp-mocha')
 const jshint = require('gulp-jshint')
+const exec = require('child_process').exec
 
 function build (cb) {
   return src('./lib/*.js')
@@ -14,7 +15,6 @@ function handleTestError (err) {
 
 function test (cb) {
   return src('./test/*.js')
-    .pipe(src('./lib/*.js'))
     .pipe(mocha({ reporter: 'spec' }))
     .on('error', handleTestError)
 }
@@ -25,38 +25,14 @@ function lint (cb) {
     .pipe(jshint.reporter('jshint-stylish'))
 }
 
-exports.default = series(lint, build, test)
-watch('./lib/*.js', exports.default)
+function gappsUpload (cb) {
+  exec('gapps upload', function (err, stdout, stderr) {
+    console.log(stdout)
+    console.log(stderr)
+    cb(err)
+  })
+}
 
-/*
-var shell = require('gulp-shell')
-var mocha = require('gulp-mocha')
-var jshint = require('gulp-jshint')
-var gulp = require('gulp')
-
-var srcRoot = './lib/'
-var tstRoot = './test/'
-
-gulp.task('lint', function () {
-  return gulp.src([ srcRoot + '*.js' ])
-    .pipe(jshint())
-    .pipe(jshint.reporter('jshint-stylish'))
-  // .pipe(jshint.reporter('fail')); //there is an issue with this reporter: skipping
-})
-
-gulp.task('test', function () {
-  return gulp.src(tstRoot + '*.js', { read: false })
-    .pipe(mocha())
-})
-
-gulp.task('upload',
-  shell.task(['gapps upload'], {
-    cwd: '.'
-  }))
-
-gulp.task('default', ['lint', 'test', 'upload'])
-
-gulp.task('watch', function () {
-  gulp.watch([srcRoot + '*.js', tstRoot + '*.js'], ['lint', 'test'])
-})
-*/
+// exports.watch = watch('./lib/*.js', series(lint, test, build))
+exports.default = series(lint, test, build)
+exports.upload = series(lint, test, build, gappsUpload)

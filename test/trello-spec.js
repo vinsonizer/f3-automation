@@ -1,3 +1,5 @@
+/* global describe, beforeEach, afterEach, it */
+
 var assert = require('chai').assert
 var sinon = require('sinon')
 var fs = require('fs')
@@ -12,7 +14,7 @@ describe('Trello Client', function () {
   var sandbox
   var fetchStub
   beforeEach(function () {
-    sandbox = sinon.sandbox.create()
+    sandbox = sinon.createSandbox()
     fetchStub = sandbox.stub(services, 'fetch')
     sandbox.stub(config, 'getConfiguration').returns({
       trello: {
@@ -119,7 +121,7 @@ describe('Trello Client', function () {
     cardList[0].id = testListId3
     fetchStub.onCall(4).returns(JSON.stringify(cardList))
 
-    trello.getNewsletterContent(function(err, content) {
+    trello.getNewsletterContent(function (err, content) {
       if (err) throw err
       else {
         assert.equal(content.length, 3, 'should have 3 lists of cards')

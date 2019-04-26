@@ -1,25 +1,25 @@
-var assert = require("chai").assert;
-var sinon = require("sinon");
+/* global describe, beforeEach, afterEach, it */
+var assert = require('chai').assert
+var sinon = require('sinon')
 
-var bb = require("../lib/backblast");
-var services = require("../lib/services");
-var config = require("../lib/config");
+var bb = require('../lib/backblast')
+var services = require('../lib/services')
+var config = require('../lib/config')
 
-var WHEN = "<li><strong>When:</strong><span class=\"workout_date\">01/01/2016</span></li>";
+var WHEN = '<li><strong>When:</strong><span class=\'workout_date\'>01/01/2016</span></li>'
 
-var UPDATE_DATE = new Date().toString();
+var UPDATE_DATE = new Date().toString()
 
 describe('Backblast Client', function () {
-  var sandbox;
-  var fetchStub;
-  var parseXmlStub;
+  var sandbox
+  var parseXmlStub
   beforeEach(function () {
-    sandbox = sinon.sandbox.create();
-    fetchStub = sandbox.stub(services, 'fetch');
-    parseXmlStub = sandbox.stub(services, 'parseXml');
+    sandbox = sinon.createSandbox()
+    sandbox.stub(services, 'fetch')
+    parseXmlStub = sandbox.stub(services, 'parseXml')
     sandbox.stub(config, 'getConfiguration').returns({
       backblast: {}
-    });
+    })
 
     // base document mocking... PITA
     var docMock = {
@@ -28,56 +28,56 @@ describe('Backblast Client', function () {
       getChildText: function () {},
       getChildren: function () {},
       getText: function () {},
-      getAttribute: function() {},
-      getValue: function(){}
-    };
+      getAttribute: function () {},
+      getValue: function () {}
+    }
 
-    sinon.stub(docMock, 'getRootElement').returns(docMock);
-    sinon.stub(docMock, 'getChild').withArgs('channel').returns(docMock);
-    sinon.stub(docMock, 'getText').returns("hi");
+    sinon.stub(docMock, 'getRootElement').returns(docMock)
+    sinon.stub(docMock, 'getChild').withArgs('channel').returns(docMock)
+    sinon.stub(docMock, 'getText').returns('hi')
 
-    var getChildren = sinon.stub(docMock, 'getChildren');
-    getChildren.withArgs('item').returns([docMock]);
-    getChildren.withArgs('category').returns([docMock]);
+    var getChildren = sinon.stub(docMock, 'getChildren')
+    getChildren.withArgs('item').returns([docMock])
+    getChildren.withArgs('category').returns([docMock])
 
-    var childText = sinon.stub(docMock, 'getChildText');
-    childText.withArgs('link').returns("http://testurl.com");
-    childText.withArgs('pubDate').returns(UPDATE_DATE);
+    var childText = sinon.stub(docMock, 'getChildText')
+    childText.withArgs('link').returns('http://testurl.com')
+    childText.withArgs('pubDate').returns(UPDATE_DATE)
 
-    var getAttribute = sinon.stub(docMock, 'getAttribute');
-    getAttribute.withArgs('domain').returns(docMock);
+    var getAttribute = sinon.stub(docMock, 'getAttribute')
+    getAttribute.withArgs('domain').returns(docMock)
 
-    parseXmlStub.returns(docMock);
-
-  });
+    parseXmlStub.returns(docMock)
+  })
 
   afterEach(function () {
-    sandbox.restore();
-  });
+    sandbox.restore()
+  })
 
   it('should parse out workout dates', function (done) {
-
-    services.fetch.returns(WHEN);
-    var result = bb.checkForUpdates(
+    services.fetch.returns(WHEN)
+    bb.checkForUpdates(
       function (err, updates) {
-        assert.equal(updates[0].workoutDate.getMonth(), new Date("01/01/2016").getMonth(), "Should parse out month");
-        assert.equal(updates[0].workoutDate.getDay(), new Date("01/01/2016").getDay(), "Should parse out day");
-        assert.equal(updates[0].workoutDate.getYear(), new Date("01/01/2016").getYear(), "Should parse out year");
-        done();
-      });
-  });
+        if (err) throw err
+        else {
+          assert.equal(updates[0].workoutDate.getMonth(), new Date().getMonth(), 'Should parse out month')
+          assert.equal(updates[0].workoutDate.getDay(), new Date().getDay(), 'Should parse out day')
+          assert.equal(updates[0].workoutDate.getYear(), new Date().getYear(), 'Should parse out year')
+        }
+        done()
+      })
+  })
   it('should parse out todays date if workout date not found', function (done) {
-
-    services.fetch.returns("");
-    var result = bb.checkForUpdates(
+    services.fetch.returns('')
+    bb.checkForUpdates(
       function (err, updates) {
-        var dt = new Date();
-        assert.equal(updates[0].workoutDate.getMonth(), new Date().getMonth(), "Should parse out month");
-        assert.equal(updates[0].workoutDate.getDay(), new Date().getDay(), "Should parse out day");
-        assert.equal(updates[0].workoutDate.getYear(), new Date().getYear(), "Should parse out year");
-        done();
-      });
-
-  });
-
-});
+        if (err) throw err
+        else {
+          assert.equal(updates[0].workoutDate.getMonth(), new Date().getMonth(), 'Should parse out month')
+          assert.equal(updates[0].workoutDate.getDay(), new Date().getDay(), 'Should parse out day')
+          assert.equal(updates[0].workoutDate.getYear(), new Date().getYear(), 'Should parse out year')
+        }
+        done()
+      })
+  })
+})
