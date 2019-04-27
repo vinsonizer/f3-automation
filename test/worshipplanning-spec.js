@@ -43,8 +43,8 @@ describe('Worshipplanning Client', function () {
       else {
         assert.isOk(token, 'should have a token')
         assert.equal(token, testToken, 'token should match')
-        done()
       }
+      done()
     })
   })
 
@@ -55,8 +55,8 @@ describe('Worshipplanning Client', function () {
       else {
         assert.isOk(result, 'should have results')
         assert.equal(result.length, 10, 'should be 10 results')
-        done()
       }
+      done()
     })
   })
 
@@ -67,8 +67,22 @@ describe('Worshipplanning Client', function () {
       else {
         assert.isOk(result, 'should have results')
         assert.equal(result.length, 2, 'should be 2 results')
-        done()
       }
+      done()
+    })
+  })
+
+  it('Should be able to fetch overall assignements', function (done) {
+    fetchStub.onFirstCall().returns(JSON.stringify(testEvents.login))
+    fetchStub.onSecondCall().returns(JSON.stringify(testEvents.getEvents))
+    fetchStub.returns(JSON.stringify(testEvents.getEventAssignments))
+    wp.getAssignments(function (err, result) {
+      if (err) throw err
+      else {
+        assert.isOk(result, 'should have results')
+        assert.equal(result.length, 10, 'should be 10 results')
+      }
+      done()
     })
   })
 })
